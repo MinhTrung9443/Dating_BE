@@ -1,0 +1,10 @@
+package vn.iotstar.DatingApp.Controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/searchCard")
+public class SearchCardController {
+	
+}
