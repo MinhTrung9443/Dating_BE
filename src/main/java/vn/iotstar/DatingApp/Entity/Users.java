@@ -3,6 +3,8 @@ package vn.iotstar.DatingApp.Entity;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,11 +37,14 @@ public class Users {
     private Account account;
     
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Image> images;
     
     @OneToOne(mappedBy = "users")
+    @JsonManagedReference
     private SearchCriteria searchCriteria;
     
     @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<MatchList> matchLists;
 }

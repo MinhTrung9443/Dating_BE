@@ -2,6 +2,9 @@ package vn.iotstar.DatingApp.Entity;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,13 +20,16 @@ public class MatchList {
     private Date createdAt;
     
     @OneToMany(mappedBy = "matchlist")
+    @JsonManagedReference
     private List<Message> messages;
     
     @ManyToOne
     @JoinColumn(name = "user1_id", nullable = false)
+    @JsonBackReference
     private Users user1; 
 
     @ManyToOne
     @JoinColumn(name = "user2_id", nullable = false)
+    @JsonBackReference
     private Users user2; 
 }

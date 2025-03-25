@@ -1,4 +1,6 @@
 package vn.iotstar.DatingApp.Entity;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,5 +23,6 @@ public class SearchCriteria {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonBackReference
     private Users users;
 }

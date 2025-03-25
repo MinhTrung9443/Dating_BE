@@ -10,13 +10,14 @@ import org.springframework.stereotype.Controller;
 
 import vn.iotstar.DatingApp.Entity.Message;
 import vn.iotstar.DatingApp.Repository.MessageRepository;
+import vn.iotstar.DatingApp.Service.IMessageService;
 
 
 
 @Controller
 public class ChatController {
 	@Autowired
-	private MessageRepository messrepo;
+	private IMessageService messService;
 	
 	@Autowired
 	private SimpMessagingTemplate messTemplate;
@@ -25,7 +26,7 @@ public class ChatController {
 	public void sendPrivateMessage(@Payload Message message)
 	{
 		message.setSentAt(new Date());
-		messrepo.save(message);
+		messService.save(message);
 
 		if (messTemplate == null) {
 		    System.out.println("messTemplate is null!");
@@ -33,10 +34,7 @@ public class ChatController {
 			String privateChannel = getPrivateChannel(message.getToUser());
 		    System.out.println("Gửi tin nhắn tới: " + privateChannel);
 		    messTemplate.convertAndSend(privateChannel, message);
-		    
-		    String privateChannel2 = getPrivateChannel(message.getFromUser());
-		    System.out.println("Gửi tin nhắn tới: " + privateChannel2);
-		    messTemplate.convertAndSend(privateChannel2, message);
+
 		}
 	}
 	
