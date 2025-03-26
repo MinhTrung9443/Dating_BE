@@ -14,5 +14,9 @@ public interface UsersRepository extends JpaRepository<Users, Long>{
 	
 	@Query("SELECT u FROM Users u WHERE YEAR(CURRENT_DATE) - YEAR(u.birthday) BETWEEN :minAge AND :maxAge")
     List<Users> findAllUsersByRangeAge(@Param("minAge") int minAge, @Param("maxAge") int maxAge);
-
+	
+	// New method to find users by hobbies
+    @Query("SELECT u FROM Users u WHERE u.interests LIKE %:hobby%")
+    List<Users> findByHobbyContaining(@Param("hobby") String hobby);
+    
 }

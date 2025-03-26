@@ -29,6 +29,9 @@ public class Users {
     private String interests;
     private String address;
     private String job;
+    // FOR LOCATION
+    private Double latitude;
+    private Double longitude;
 
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
