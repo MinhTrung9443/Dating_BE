@@ -18,4 +18,6 @@ public interface IUserService {
 
 	List<Users> findBySexualOrientation(String sexualOrientation);
 
+	List<Users> findByZodiacSign(String zodiacSign);
+
 }

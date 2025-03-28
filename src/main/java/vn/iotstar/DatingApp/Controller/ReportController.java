@@ -1,5 +1,7 @@
 package vn.iotstar.DatingApp.Controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +20,8 @@ public class ReportController {
 	@PostMapping("/reportUser")
 	public ResponseEntity<?> reportUser(@RequestBody Reports report)
 	{
+		report.setReportAt(new Date());
 		reportService.save(report);
-		return ResponseEntity.ok("Bao cao thanh cong");
+		return ResponseEntity.ok(null);
 	}
 }

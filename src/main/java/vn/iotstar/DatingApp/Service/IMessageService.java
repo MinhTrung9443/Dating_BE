@@ -16,4 +16,6 @@ public interface IMessageService {
 
 	Optional<Message> findLatestMessage(Long fromUser, Long receiverId);
 
+	List<Message> findMessages(Long user1, Long user2, int limit, int offset);
+
 }

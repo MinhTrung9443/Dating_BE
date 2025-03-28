@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import vn.iotstar.DatingApp.Entity.Message;
@@ -18,4 +19,13 @@ public interface MessageRepository extends JpaRepository<Message, Long>{
 	           "OR (m.fromUser = :toUser AND m.toUser = :fromUser) " +
 	           "ORDER BY m.sentAt DESC LIMIT 1")
 	Optional<Message> findLatestMessage(Long fromUser, Long receiverId);
+	
+    @Query("SELECT m FROM Message m " +
+           "WHERE (m.fromUser = :user1 AND m.toUser = :user2) " +
+           "OR (m.fromUser = :user2 AND m.toUser = :user1) " +
+           "ORDER BY m.sentAt DESC")
+    List<Message> findMessagesBetweenUsers(
+            @Param("user1") Long user1,
+            @Param("user2") Long user2,
+            Pageable pageable);
 }

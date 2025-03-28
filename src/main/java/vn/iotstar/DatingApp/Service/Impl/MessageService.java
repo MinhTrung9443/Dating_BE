@@ -1,5 +1,6 @@
 package vn.iotstar.DatingApp.Service.Impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import vn.iotstar.DatingApp.Entity.Message;
+import vn.iotstar.DatingApp.Entity.Users;
+import vn.iotstar.DatingApp.Repository.MatchListRepository;
 import vn.iotstar.DatingApp.Repository.MessageRepository;
 import vn.iotstar.DatingApp.Service.IMessageService;
 
@@ -33,5 +36,13 @@ public class MessageService implements IMessageService{
 		return messageRepository.findLatestMessage(fromUser, receiverId);
 	}
 	
+	@Override
+	public List<Message> findMessages(Long user1, Long user2, int limit, int offset)
+	{
+		Pageable page = PageRequest.of(limit, offset);
+		List<Message> list = new ArrayList<>();
+		list = messageRepository.findMessagesBetweenUsers(user1, user2, page);
+		return list;
+	}
 
 }

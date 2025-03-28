@@ -21,10 +21,14 @@ public class BlockService implements IBlockService {
 		return matchListRepository.save(entity);
 	}
 
+	
+
 	@Override
-	public List<MatchList> findAllByUser1(Users user1) {
-		return matchListRepository.findAllByUser1(user1);
+	public List<MatchList> findAllByUser1AndStatus(Users user1, String status) {
+		return matchListRepository.findAllByUser1AndStatus(user1, status);
 	}
+
+
 
 	public Optional<MatchList> findByUser1AndUser2(Users user1, Users user2) {
 		return matchListRepository.findByUser1AndUser2(user1, user2);

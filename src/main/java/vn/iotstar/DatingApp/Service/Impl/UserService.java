@@ -34,6 +34,11 @@ public class UserService implements IUserService{
 	public List<Users> findByInterests(String interests) {
 		return userRepository.findByInterests(interests);
 	}
+
+	@Override
+	public List<Users> findByZodiacSign(String zodiacSign) {
+		return userRepository.findByZodiacSign(zodiacSign);
+	}
 	
 	
 }

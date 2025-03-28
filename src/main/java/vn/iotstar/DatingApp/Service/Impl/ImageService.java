@@ -1,5 +1,7 @@
 package vn.iotstar.DatingApp.Service.Impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,11 @@ public class ImageService implements IImageService {
 	@Override
 	public void delete(Image entity) {
 		imageRepository.delete(entity);
+	}
+
+	@Override
+	public Optional<Image> findById(Long id) {
+		return imageRepository.findById(id);
 	}
 	
 

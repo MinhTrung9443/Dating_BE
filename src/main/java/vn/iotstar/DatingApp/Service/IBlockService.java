@@ -13,10 +13,12 @@ public interface IBlockService {
 
 	<S extends MatchList> S save(S entity);
 
-	List<MatchList> findAllByUser1(Users user1);
 
 	Optional<MatchList> findByUser1AndUser2(Users user1, Users user2);
 
 	void delete(MatchList entity);
+
+
+	List<MatchList> findAllByUser1AndStatus(Users user1, String status);
 
 }

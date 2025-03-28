@@ -19,7 +19,7 @@ public class SearchCardController {
 	@Autowired
 	IUserService userService;
 	@PostMapping("/find/SexualOrientation")
-	public ResponseEntity<?> findBySexualOrientation(@RequestBody String SexualOrientation)
+	public ResponseEntity<?> findBySexualOrientation(String SexualOrientation)
 	{
 		List<Users> listUser = new ArrayList<>();
 		listUser = userService.findBySexualOrientation(SexualOrientation);
@@ -28,11 +28,22 @@ public class SearchCardController {
 	}
 	
 	@PostMapping("/find/interests")
-	public ResponseEntity<?> findByInterests(@RequestBody String interests)
+	public ResponseEntity<?> findByInterests(String interests)
 	{
 		List<Users> listUser = new ArrayList<>();
 		listUser = userService.findByInterests(interests);
 		return ResponseEntity.ok(listUser);
 		
 	}
+	
+	@PostMapping("/find/zodiacSign")
+	public ResponseEntity<?> findByZodiacSign(String zodiacSign)
+	{
+		List<Users> listUser = new ArrayList<>();
+		listUser = userService.findByZodiacSign(zodiacSign);
+		return ResponseEntity.ok(listUser);
+		
+	}
+	
+	// search xong con tinh toan lai sap xep theo vi tri
 }
