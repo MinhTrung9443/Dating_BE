@@ -8,4 +8,6 @@ public interface FilterService {
 	List<Users> filterUsersByAge(int minAge, int maxAge);
 
 	List<Users> filterUsersByHobbies(List<String> hobbies, String currentEmail);
+
+	List<Users> filterUsersByDistance(double maxDistance, String currentEmail);
 }

@@ -27,9 +27,9 @@ public class AccountUserDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return Arrays.stream(acc.getRole().split(","))
-		        .map(SimpleGrantedAuthority::new) // Prefix with "ROLE_"
-		        .collect(Collectors.toList());
+		 return Arrays.stream(acc.getRole().split(","))
+	                .map(role -> new SimpleGrantedAuthority("ROLE_" + role)) // Thêm tiền tố
+	                .collect(Collectors.toList());
 	}
 
 	@Override

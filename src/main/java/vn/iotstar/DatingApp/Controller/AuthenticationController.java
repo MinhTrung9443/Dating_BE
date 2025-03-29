@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Model.AccountUserDetails;
-import vn.iotstar.DatingApp.Model.Auth.LoginAccountModel;
-import vn.iotstar.DatingApp.Model.Auth.RegisterAccountModel;
-import vn.iotstar.DatingApp.Model.Response.LoginResponse;
+import vn.iotstar.DatingApp.Model.Auth.LoginRequest;
+import vn.iotstar.DatingApp.Model.Auth.RegisterRequest;
+import vn.iotstar.DatingApp.Model.Response.AuthResponse;
 import vn.iotstar.DatingApp.Service.AuthenticationService;
 import vn.iotstar.DatingApp.Service.JwtService;
 
@@ -28,23 +28,23 @@ public class AuthenticationController {
 	
 	@PostMapping("/signup")
 	@Transactional
-	public ResponseEntity<Account> register(@RequestBody RegisterAccountModel registerUser) {
+	public ResponseEntity<Account> register(@RequestBody RegisterRequest registerUser) {
 		Account registeredUser = authenticationService.signup(registerUser);
 		return ResponseEntity.ok(registeredUser);
 	}
 	
 	@PostMapping(path="/login")
 	@Transactional
-	public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginAccountModel loginUser) {
+	public ResponseEntity<AuthResponse> authenticate(@RequestBody LoginRequest loginUser) {
 		Account authenticationUser = authenticationService.authenticate(loginUser);
 		
 		//changing here
 		String jwtToken = jwtService.generateToken(new AccountUserDetails(authenticationUser));
 		
-		LoginResponse loginResponse = new LoginResponse();
-		loginResponse.setToken(jwtToken);
-		loginResponse.setExpiresIn(jwtService.getExpirationTime());
+		AuthResponse authResponse = new AuthResponse();
+		authResponse.setToken(jwtToken);
+		authResponse.setExpiresIn(jwtService.getExpirationTime());
 		
-		return ResponseEntity.ok(loginResponse);
+		return ResponseEntity.ok(authResponse);
 	}
 }

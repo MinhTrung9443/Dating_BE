@@ -1,12 +1,14 @@
 package vn.iotstar.DatingApp.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.Users;
 
 @Repository
@@ -18,5 +20,8 @@ public interface UsersRepository extends JpaRepository<Users, Long>{
 	// New method to find users by hobbies
     @Query("SELECT u FROM Users u WHERE u.interests LIKE %:hobby%")
     List<Users> findByHobbyContaining(@Param("hobby") String hobby);
+
+    // New method to find users by their account
+	Optional<Users> findByAccount(Account account);
     
 }
