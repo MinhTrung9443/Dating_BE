@@ -78,70 +78,50 @@ public class FilterServiceImpl implements FilterService {
 	}
 
 	// by distance
-    @Override
-    public List<Users> filterUsersByDistance(double maxDistance, String currentEmail) {
-        logger.info("Starting filterUsersByDistance with maxDistance={} for user email={}", maxDistance, currentEmail);
+	@Override
+	public List<Users> filterUsersByDistance(double maxDistance, String currentEmail) {
+	    logger.info("Starting filterUsersByDistance with maxDistance={} for user email={}", maxDistance, currentEmail);
 
-        Optional<Account> currentAccount = accountRepository.findAccountByEmail(currentEmail);
-        if (currentAccount.isEmpty()) {
-            logger.warn("Account not found for email: {}", currentEmail);
-            return new ArrayList<>();
-        }
-        logger.debug("Found account with id={} for email={}", currentAccount.get().getId(), currentEmail);
-        
-        Optional<Users> currentUser = usersRepository.findByAccount(currentAccount.get());
-        if (currentUser.isEmpty()) {
-            logger.warn("User profile not found for account id={}", currentAccount.get().getId());
-            return new ArrayList<>();
-        }
-        
-        if (currentUser.get().getLatitude() == null || currentUser.get().getLongitude() == null) {
-            logger.warn("User with id={} has no location data (latitude or longitude is null)", currentUser.get().getId());
-            return new ArrayList<>();
-        }
-        
-        double userLat = currentUser.get().getLatitude();
-        double userLng = currentUser.get().getLongitude();
-        Long userId = currentUser.get().getId();
-        
-        logger.info("Current user (id={}) location: lat={}, lng={}", userId, userLat, userLng);
-        
-        List<Users> allUsers = usersRepository.findAll();
-        logger.debug("Found {} total users in database", allUsers.size());
-        
-        // filter by distance
-        List<Users> filteredUsers = allUsers.stream()
-                .filter(user -> {
-                    if (user.getId().equals(userId)) {
-                        logger.trace("Excluding current user with id={}", userId);
-                        return false;
-                    }
-                    return true;
-                }) // excluded current user
-                .filter(user -> {
-                    if (user.getLatitude() == null || user.getLongitude() == null) {
-                        logger.trace("Excluding user with id={} due to missing location data", user.getId());
-                        return false;
-                    }
-                    return true;
-                })
-                .filter(user -> {
-                    double distance = calculateDistance(
-                            userLat, userLng,
-                            user.getLatitude(), user.getLongitude()
-                    );
-                    logger.trace("User id={} is at distance={} km from current user", user.getId(), distance);
-                    boolean withinRange = distance <= maxDistance;
-                    if (withinRange) {
-                        logger.debug("User id={} is within the specified range ({}km)", user.getId(), maxDistance);
-                    }
-                    return withinRange;
-                })
-                .collect(Collectors.toList());
-        
-        logger.info("Filter by distance completed. Found {} users within {}km", filteredUsers.size(), maxDistance);
-        return filteredUsers;
-    }
+	    Optional<Account> currentAccount = accountRepository.findAccountByEmail(currentEmail);
+	    if (currentAccount.isEmpty()) {
+	        logger.warn("Account not found for email: {}", currentEmail);
+	        return new ArrayList<>();
+	    }
+	    logger.debug("Found account with id={} for email={}", currentAccount.get().getId(), currentEmail);
+	    
+	    Optional<Users> currentUser = usersRepository.findByAccount(currentAccount.get());
+	    if (currentUser.isEmpty()) {
+	        logger.warn("User profile not found for account id={}", currentAccount.get().getId());
+	        return new ArrayList<>();
+	    }
+	    
+	    if (currentUser.get().getLatitude() == null || currentUser.get().getLongitude() == null) {
+	        logger.warn("User with id={} has no location data", currentUser.get().getId());
+	        return new ArrayList<>();
+	    }
+	    
+	    double userLat = currentUser.get().getLatitude();
+	    double userLng = currentUser.get().getLongitude();
+	    Long userId = currentUser.get().getId();
+	    
+	    logger.info("Current user (id={}) location: lat={}, lng={}", userId, userLat, userLng);
+	    
+	    List<Users> allUsers = usersRepository.findAll();
+	    logger.debug("Found {} total users in database", allUsers.size());
+
+	    List<Users> filteredUsers = allUsers.stream()
+	            .filter(user -> user.getId() != null && !user.getId().equals(userId)) // Exclude current user
+	            .filter(user -> user.getLatitude() != null && user.getLongitude() != null)
+	            .filter(user -> {
+	                double distance = calculateDistance(userLat, userLng, user.getLatitude(), user.getLongitude());
+	                logger.debug("User id={} is {} km away from current user", user.getId(), distance);
+	                return distance <= maxDistance;
+	            })
+	            .collect(Collectors.toList());
+
+	    logger.info("Filter by distance completed. Found {} users within {}km", filteredUsers.size(), maxDistance);
+	    return filteredUsers;
+	}
     
 	// Calculate distance of 2 points by Haversine formula
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
