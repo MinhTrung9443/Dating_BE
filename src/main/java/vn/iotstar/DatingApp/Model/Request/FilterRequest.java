@@ -7,9 +7,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class AgeFilterRequest {
-	private int minAge;
-	private int maxAge;
+//@AllArgsConstructor
+//@NoArgsConstructor
+public class FilterRequest {
+
 }

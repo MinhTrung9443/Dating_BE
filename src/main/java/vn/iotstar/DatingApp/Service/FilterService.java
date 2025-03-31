@@ -5,9 +5,7 @@ import java.util.List;
 import vn.iotstar.DatingApp.Entity.Users;
 
 public interface FilterService {
-	List<Users> filterUsersByAge(int minAge, int maxAge);
-
-	List<Users> filterUsersByHobbies(List<String> hobbies, String currentEmail);
-
-	List<Users> filterUsersByDistance(double maxDistance, String currentEmail);
+	List<Users> filterUsers(Integer minAge, Integer maxAge, String zodiacSign, 
+            String personalityType, String interests, 
+            Double latitude, Double longitude, Double maxDistance);
 }
