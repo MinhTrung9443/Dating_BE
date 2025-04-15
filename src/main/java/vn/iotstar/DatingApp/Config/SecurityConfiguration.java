@@ -17,22 +17,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
 	@Autowired
-    private AuthenticationProvider authenticationProvider;
+	private AuthenticationProvider authenticationProvider;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter; // Thêm dependency
-    
+	@Autowired
+	private JwtAuthenticationFilter jwtAuthenticationFilter; // Thêm dependency
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/error").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Thêm JWT filter
-                .build();
-    }
+	@Bean
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		return http.csrf(csrf -> csrf.disable()) // Disables CSRF protection
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/auth/**", "/error", "/swagger-ui/**", "/v3/api-docs/**").permitAll()// Public
+																														// endpoints
+						.anyRequest().authenticated() // All other endpoints require authentication
+				).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless
+																												// session
+																												// (typical
+																												// for
+																												// JWT)
+				.authenticationProvider(authenticationProvider) // Custom auth provider
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JWT filter
+				.build();
+	}
 }

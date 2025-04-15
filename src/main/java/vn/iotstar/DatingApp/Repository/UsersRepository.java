@@ -17,28 +17,23 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 	// New method to find users by their account
 	Optional<Users> findByAccount(Account account);
 
-	@Query(value = "SELECT * FROM Users u WHERE " +
-		       "(:minAge IS NULL OR DATEDIFF(YEAR, u.birthday, GETDATE()) >= :minAge) AND " +
-		       "(:maxAge IS NULL OR DATEDIFF(YEAR, u.birthday, GETDATE()) <= :maxAge) AND " +
-		       "(:zodiacSign IS NULL OR u.zodiac_sign = :zodiacSign) AND " +
-		       "(:personalityType IS NULL OR u.personality_type = :personalityType) AND " +
-		       "(:interests IS NULL OR u.interests LIKE '%' + :interests + '%') AND " +
-		       "(:latitude IS NULL OR :longitude IS NULL OR " +
-		       "(u.latitude IS NOT NULL AND u.longitude IS NOT NULL AND " +
-		       "u.latitude BETWEEN :latitude - 1 AND :latitude + 1 AND " +
-		       "u.longitude BETWEEN :longitude - 1 AND :longitude + 1 AND " +
-		       "6371 * 2 * ASIN(SQRT(" +
-		       "POWER(SIN(RADIANS(:latitude - u.latitude) / 2), 2) + " +
-		       "COS(RADIANS(u.latitude)) * COS(RADIANS(:latitude)) * " +
-		       "POWER(SIN(RADIANS(:longitude - u.longitude) / 2), 2))) <= :maxDistance))",
-		       nativeQuery = true)
-		List<Users> filterUsers(
-		    @Param("minAge") Integer minAge, 
-		    @Param("maxAge") Integer maxAge,
-		    @Param("zodiacSign") String zodiacSign, 
-		    @Param("personalityType") String personalityType,
-		    @Param("interests") String interests, 
-		    @Param("latitude") Double latitude,
-		    @Param("longitude") Double longitude, 
-		    @Param("maxDistance") Double maxDistance);
+	// filter user based on search criteria when creating account
+	@Query(value = "SELECT * FROM Users u WHERE "
+			+ "(:minAge IS NULL OR DATEDIFF(YEAR, u.birthday, GETDATE()) >= :minAge) AND "
+			+ "(:maxAge IS NULL OR DATEDIFF(YEAR, u.birthday, GETDATE()) <= :maxAge) AND "
+			+ "(:zodiacSign IS NULL OR u.zodiac_sign = :zodiacSign) AND "
+			+ "(:personalityType IS NULL OR u.personality_type = :personalityType) AND "
+			+ "(:interests IS NULL OR u.interests LIKE '%' + :interests + '%') AND "
+			+ "(:latitude IS NULL OR :longitude IS NULL OR "
+			+ "(u.latitude IS NOT NULL AND u.longitude IS NOT NULL AND "
+			+ "u.latitude BETWEEN :latitude - 1 AND :latitude + 1 AND "
+			+ "u.longitude BETWEEN :longitude - 1 AND :longitude + 1 AND " + "6371 * 2 * ASIN(SQRT("
+			+ "POWER(SIN(RADIANS(:latitude - u.latitude) / 2), 2) + "
+			+ "COS(RADIANS(u.latitude)) * COS(RADIANS(:latitude)) * "
+			+ "POWER(SIN(RADIANS(:longitude - u.longitude) / 2), 2))) <= :maxDistance))", nativeQuery = true)
+	List<Users> filterUsers(@Param("minAge") Integer minAge, @Param("maxAge") Integer maxAge,
+			@Param("zodiacSign") String zodiacSign, @Param("personalityType") String personalityType,
+			@Param("interests") String interests, @Param("latitude") Double latitude,
+			@Param("longitude") Double longitude, @Param("maxDistance") Double maxDistance);
+
 }
