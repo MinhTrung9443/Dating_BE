@@ -1,6 +1,5 @@
 package vn.iotstar.DatingApp.Entity;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 

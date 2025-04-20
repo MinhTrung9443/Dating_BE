@@ -1,7 +1,11 @@
 package vn.iotstar.DatingApp.Controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -39,15 +43,16 @@ public class ProfileController {
 		}
 		return ResponseEntity.badRequest().body(null);
 	}
-	
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyy MM dd", Locale.getDefault());
 	@PostMapping("/updateProfile")
-	public ResponseEntity<?> updateProfile(@RequestBody UserModel userInfo)			// con loi kieu du lieu Date
+	public ResponseEntity<?> updateProfile(@RequestBody UserModel userInfo) throws ParseException			
 	{
-		System.out.println(userInfo.toString());
+		Date date = formatter.parse(userInfo.getBirthday());
 		Optional<Users> user = userService.findById(userInfo.getId());
 		if (user.isPresent()) {
 			Users updateUser = user.get();
 			BeanUtils.copyProperties(userInfo, updateUser);
+			updateUser.setBirthday(date);
 			userService.save(updateUser);
 			return ResponseEntity.ok(null);
 		}

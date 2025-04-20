@@ -1,8 +1,5 @@
 package vn.iotstar.DatingApp.Model;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +13,7 @@ public class UserModel {
     private String phone;
     private String gender;
     private String sexualOrientation;
-    private Date birthday;
+    private String birthday;
     private String biography;
     private double height;
     private int weight;
