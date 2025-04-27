@@ -37,7 +37,11 @@ public class ChatController {
 	
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	
-	
+	/**
+	 * gửi tin nhắn 
+	 * 
+	 * 
+	 */
 	@MessageMapping("/sendPrivateMessage")
 	public void sendPrivateMessage(@Payload MessageModel receiveMessage)
 	{
@@ -63,6 +67,12 @@ public class ChatController {
             sendNotification(message.getToUser(), "Bạn có tin nhắn mới từ " + user1.getName(), "NOTIFY");
 		}
 	}
+	
+	/**
+	 * Hàm tạo frame thông báo (chức năng chưa hoàn thiện)
+	 * 
+	 * 
+	 */
 	private void sendNotification(Long userId, String notifyContent, String notifyType) {
 	    try {
 	        // Tạo JSON cho notify
@@ -84,7 +94,11 @@ public class ChatController {
 	        System.err.println("Lỗi gửi notify frame: " + e.getMessage());
 	    }
 	}
-	
+	/**
+	 * tạo private channel : kênh cá nhân của người dùng
+	 * 
+	 * 
+	 */
 	private String getPrivateChannel(Long userID)
 	{
 		return "/topic/private/"+ userID;

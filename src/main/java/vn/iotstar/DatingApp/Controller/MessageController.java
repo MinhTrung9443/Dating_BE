@@ -29,6 +29,11 @@ public class MessageController {
 	IUserService userService;
 	@Autowired
 	MatchListRepository matchRepo;
+	/**
+	 * API lấy danh sách đã match 
+	 * 
+	 * 
+	 */
 	@GetMapping("/getListMatch")
 	public ResponseEntity<?> getListMatch(Long user1)
 	{
@@ -60,6 +65,11 @@ public class MessageController {
 		
 		return ResponseEntity.ok(listItem);
 	}
+	/**
+	 * API lấy danh sách tin nhắn giữa người dùng, một lần lấy 20 tin nhắn
+	 * 
+	 * 
+	 */
 	
 	// them ham lay danh sach tin nhan với so luong co dinh, neu nguoi dung luot ve tin nhan cu hon thi  moi hien dan dan
 	@GetMapping("/getMessages")

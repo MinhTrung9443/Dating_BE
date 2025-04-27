@@ -28,6 +28,11 @@ public class BlockController {
 	IUserService userService;
 	@Autowired
 	IBlockService blockService;
+	/**
+	 * API block người dùng
+	 * 
+	 * 
+	 */
 	@PostMapping("/")
 	public ResponseEntity<?> blockUser(@RequestBody MatchListModel blockUser) {
 		Users user1 = userService.findById(blockUser.getUser1()).get();
@@ -52,7 +57,11 @@ public class BlockController {
 		
 		return ResponseEntity.ok(null);
 	}
-	
+	/**
+	 * API lấy danh sách người dùng bị blok
+	 * 
+	 * @return danh sách người bị block
+	 */
 	@PostMapping("/getAll")
 	public ResponseEntity<?> getAllBlockuser(Long userId)
 	{
@@ -61,7 +70,11 @@ public class BlockController {
 		
 		return ResponseEntity.ok(listMatchBlockUser);
 	}
-	
+	/**
+	 * API bỏ block
+	 * 
+	 * 
+	 */
 	@PostMapping("/delete")
 	public ResponseEntity<?> unBlockUser(@RequestBody MatchListModel unBlockUser){
 		Users user1 = userService.findById(unBlockUser.getUser1()).get();

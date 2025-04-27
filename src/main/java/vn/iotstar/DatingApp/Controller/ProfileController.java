@@ -31,6 +31,12 @@ public class ProfileController {
 	IUserService userService;
 	@Autowired
 	IImageService imageService;
+	
+	/**
+	 * API lấy thông tin người dùng
+	 * 
+	 * 
+	 */
 	@PostMapping("/get")
 	public ResponseEntity<?> getProfile(Long userId)
 	{
@@ -44,6 +50,12 @@ public class ProfileController {
 		return ResponseEntity.badRequest().body(null);
 	}
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy MM dd", Locale.getDefault());
+	
+	/**
+	 * API Cập nhật thông tin người dùng
+	 * 
+	 * 
+	 */
 	@PostMapping("/updateProfile")
 	public ResponseEntity<?> updateProfile(@RequestBody UserModel userInfo) throws ParseException			
 	{
@@ -58,7 +70,11 @@ public class ProfileController {
 		}
 		return ResponseEntity.badRequest().body(null);
 	}
-	
+	/**
+	 * API xóa ảnh trong profile
+	 * 
+	 * 
+	 */
 	@PostMapping("/removeImage")
 	public ResponseEntity<?> removeImage(@RequestBody ImageModel image)
 	{
@@ -69,7 +85,11 @@ public class ProfileController {
 		imageService.delete(delImage);
 		return ResponseEntity.ok(null);
 	}
-	
+	/**
+	 * API thêm ảnh vào profile
+	 * 
+	 * 
+	 */
 	@PostMapping("/addImage")
 	public ResponseEntity<?> addImage(@RequestBody ImageModel image)
 	{
@@ -80,7 +100,11 @@ public class ProfileController {
 		imageService.save(newImage);
 		return ResponseEntity.ok(null);
 	}
-	
+	/**
+	 * API lấy tất cả ảnh trong profile của người dùng
+	 * 
+	 * 
+	 */
 	@PostMapping("/getAllImage")
 	public ResponseEntity<?> getAllImage(Long userId)
 	{
@@ -89,6 +113,12 @@ public class ProfileController {
 		listImage = user.get().getImages();
 		return ResponseEntity.ok(listImage);
 	}
+	/**
+	 * API lấy thông tin về mục tiêu tìm kiếm
+	 * 
+	 * 
+	 */
+	
 	@GetMapping("/getSearch")
 	public ResponseEntity<?> getSearch(Long userId){
 		Users user = userService.findById(userId).get();
