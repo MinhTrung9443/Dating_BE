@@ -2,6 +2,7 @@ package vn.iotstar.DatingApp.Entity;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,7 +22,8 @@ public class Message {
     private Date sentAt;
     private boolean liked;
     
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonBackReference
+    @ManyToOne()
+    @JsonBackReference("matchlist-message")
+    @JsonIgnoreProperties(ignoreUnknown = true) // thêm dòng này
     private MatchList matchlist;
 }

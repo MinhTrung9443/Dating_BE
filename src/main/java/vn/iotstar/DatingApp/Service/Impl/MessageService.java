@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,9 +40,11 @@ public class MessageService implements IMessageService{
 	@Override
 	public List<Message> findMessages(Long user1, Long user2, int limit, int offset)
 	{
-		Pageable page = PageRequest.of(limit, offset);
-		List<Message> list = new ArrayList<>();
-		list = messageRepository.findMessagesBetweenUsers(user1, user2, page);
+		Pageable pageable = PageRequest.of(offset, limit);
+		Page<Message> pageResult = messageRepository.findMessagesBetweenUsers(user1, user2, pageable);
+		
+		// Trả về danh sách Message từ pageResult
+		List<Message> list = pageResult.getContent();
 		return list;
 	}
 

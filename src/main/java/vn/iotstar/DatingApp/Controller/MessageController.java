@@ -33,17 +33,27 @@ public class MessageController {
 	public ResponseEntity<?> getListMatch(Long user1)
 	{
 		Users user = userService.findById(user1).get();
-		List<MatchList> listmatch = matchRepo.findAllByUser1AndStatus(user, "MATCH");
+		List<MatchList> listmatch = matchRepo.findAllByUser1OrUser2AndStatus(user, "MATCH");
 		List<MessageItem> listItem = new ArrayList<>();
+		System.out.println("id user1 truyen toi" + user1 + "listmath : " + listmatch.get(0).getUser1().getId());
 		for (MatchList m : listmatch) {
 			MessageItem messItem = new MessageItem();
-			messItem.setSenderId(m.getUser2().getId().intValue());
-			messItem.setName(m.getUser2().getName());
-			messItem.setPicture(m.getUser2().getImages().get(0).getImage());
+			if (m.getUser1().getId() == user1)
+			{
+				messItem.setSenderId(m.getUser2().getId().intValue());
+				messItem.setName(m.getUser2().getName());
+				messItem.setPicture(m.getUser2().getImages().get(0).getImage());
+			}
+			else 
+			{
+				messItem.setSenderId(m.getUser1().getId().intValue());
+				messItem.setName(m.getUser1().getName());
+				messItem.setPicture(m.getUser1().getImages().get(0).getImage());
+			}
 			messItem.setCount(m.getMessages().size());
 			if (messItem.getCount() != 0)
 			{
-				messItem.setContent(m.getMessages().get(m.getMessages().size()).getMessageContent());
+				messItem.setContent(m.getMessages().get(m.getMessages().size()-1).getMessageContent());
 			}
 			listItem.add(messItem);
 		}
@@ -58,7 +68,7 @@ public class MessageController {
 	        @RequestParam("user2") Long user2,
 	        @RequestParam("limit") int limit,
 	        @RequestParam("offset") int offset) {
-
+		
 	    List<Message> messages = messService.findMessages(user1, user2, limit, offset);
 	    return ResponseEntity.ok(messages);
 	}

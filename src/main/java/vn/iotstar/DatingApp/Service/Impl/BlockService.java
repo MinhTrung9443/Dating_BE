@@ -25,7 +25,7 @@ public class BlockService implements IBlockService {
 
 	@Override
 	public List<MatchList> findAllByUser1AndStatus(Users user1, String status) {
-		return matchListRepository.findAllByUser1AndStatus(user1, status);
+		return matchListRepository.findAllByUser1OrUser2AndStatus(user1, status);
 	}
 
 

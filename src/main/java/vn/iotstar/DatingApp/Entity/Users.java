@@ -37,11 +37,11 @@ public class Users {
     private Account account;
     
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonManagedReference("Users-images")
     private List<Image> images;
     
     @OneToOne(mappedBy = "users")
-    @JsonManagedReference
+    @JsonManagedReference("Users-searchCriteria")
     private SearchCriteria searchCriteria;
     
     @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL, orphanRemoval = true)
