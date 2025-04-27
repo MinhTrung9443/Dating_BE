@@ -37,7 +37,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
            "OR (m.fromUser = :user2 AND m.toUser = :user1) " +
            "ORDER BY m.sentAt DESC")
     Page<Message> findMessagesBetweenUsers(
-            @Param("user1") Long user1,
-            @Param("user2") Long user2,
+            @Param("user1") Users user1,
+            @Param("user2") Users user2,
             Pageable pageable);
 }

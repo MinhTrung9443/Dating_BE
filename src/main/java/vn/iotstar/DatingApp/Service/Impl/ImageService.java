@@ -1,11 +1,13 @@
 package vn.iotstar.DatingApp.Service.Impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import vn.iotstar.DatingApp.Entity.Image;
+import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Repository.ImageRepository;
 import vn.iotstar.DatingApp.Service.IImageService;
 
@@ -29,5 +31,9 @@ public class ImageService implements IImageService {
 		return imageRepository.findById(id);
 	}
 	
-
+	@Override
+	public List<Image> findAllById(Users user)
+	{
+		return imageRepository.findAllByUser(user);
+	}
 }

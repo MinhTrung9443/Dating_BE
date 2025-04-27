@@ -21,7 +21,7 @@ public interface MatchListRepository extends JpaRepository<MatchList, Long> {
 //	List<MatchList> findAllByUser1AndStatus(Users user1, String status);
 	 @Query("SELECT m FROM MatchList m WHERE (m.user1 = :user OR m.user2 = :user) AND m.status = :status")
 	List<MatchList> findAllByUser1OrUser2AndStatus(Users user, String status);
-	Optional<MatchList> findByUser1AndUser2(Users user1,Users user2);	
+
 	// STATUS: Pending, Matched, Rejected, Block
 	/**
      * Find all users who liked the current user (users who initiated a match with the current user)

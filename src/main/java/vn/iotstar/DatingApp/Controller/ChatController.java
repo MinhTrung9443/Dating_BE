@@ -49,9 +49,10 @@ public class ChatController {
 		BeanUtils.copyProperties(receiveMessage, message);
 		message.setSentAt(new Date());
 		
-		Users user1 = userRepo.findById(message.getFromUser()).get();
-		Users user2 = userRepo.findById(message.getToUser()).get();
-		
+		Users user1 = userRepo.findById(receiveMessage.getFromUser()).get();
+		Users user2 = userRepo.findById(receiveMessage.getToUser()).get();
+		message.setFromUser(user1);
+		message.setToUser(user2);
 		MatchList matchList = matchlistRepo.findByUser1AndUser2(user1, user2).get();
 		message.setMatchlist(matchList);
 		
@@ -60,11 +61,11 @@ public class ChatController {
 		if (messTemplate == null) {
 		    System.out.println("messTemplate is null!");
 		} else {
-			String privateChannel = getPrivateChannel(message.getToUser());
+			String privateChannel = getPrivateChannel(message.getToUser().getId());
 		    System.out.println("Gửi tin nhắn tới: " + privateChannel);
 		    messTemplate.convertAndSend(privateChannel, message);
 		 // Gửi notify frame tới người nhận
-            sendNotification(message.getToUser(), "Bạn có tin nhắn mới từ " + user1.getName(), "NOTIFY");
+            sendNotification(message.getToUser().getId(), "Bạn có tin nhắn mới từ " + user1.getName(), "NOTIFY");
 		}
 	}
 	

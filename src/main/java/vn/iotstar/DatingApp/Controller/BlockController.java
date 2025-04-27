@@ -17,6 +17,8 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -35,6 +37,7 @@ public class BlockController {
 	 */
 	@PostMapping("/")
 	public ResponseEntity<?> blockUser(@RequestBody MatchListModel blockUser) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user1 = userService.findById(blockUser.getUser1()).get();
 		Users user2 = userService.findById(blockUser.getUser2()).get();
 		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);
@@ -65,6 +68,7 @@ public class BlockController {
 	@PostMapping("/getAll")
 	public ResponseEntity<?> getAllBlockuser(Long userId)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user = userService.findById(userId).get();
 		List<MatchList> listMatchBlockUser = blockService.findAllByUser1AndStatus(user,"BLOCK");
 		
@@ -77,6 +81,7 @@ public class BlockController {
 	 */
 	@PostMapping("/delete")
 	public ResponseEntity<?> unBlockUser(@RequestBody MatchListModel unBlockUser){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user1 = userService.findById(unBlockUser.getUser1()).get();
 		Users user2 = userService.findById(unBlockUser.getUser2()).get();
 		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);

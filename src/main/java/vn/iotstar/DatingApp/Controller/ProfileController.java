@@ -11,6 +11,8 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +42,7 @@ public class ProfileController {
 	@PostMapping("/get")
 	public ResponseEntity<?> getProfile(Long userId)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user;
 		Optional<Users> optionalUser = userService.findById(userId);
 		if (optionalUser.isPresent())
@@ -59,6 +62,7 @@ public class ProfileController {
 	@PostMapping("/updateProfile")
 	public ResponseEntity<?> updateProfile(@RequestBody UserModel userInfo) throws ParseException			
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Date date = formatter.parse(userInfo.getBirthday());
 		Optional<Users> user = userService.findById(userInfo.getId());
 		if (user.isPresent()) {
@@ -78,6 +82,7 @@ public class ProfileController {
 	@PostMapping("/removeImage")
 	public ResponseEntity<?> removeImage(@RequestBody ImageModel image)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Image delImage = new Image();
 		delImage = imageService.findById(image.getId()).get();
 		delImage.setUser(null);
@@ -93,6 +98,7 @@ public class ProfileController {
 	@PostMapping("/addImage")
 	public ResponseEntity<?> addImage(@RequestBody ImageModel image)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Image newImage = new Image();
 		BeanUtils.copyProperties(image, newImage);
 		Optional<Users> user = userService.findById(image.getUserId());
@@ -108,9 +114,17 @@ public class ProfileController {
 	@PostMapping("/getAllImage")
 	public ResponseEntity<?> getAllImage(Long userId)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List<Image> listImage = new ArrayList<>();
 		Optional<Users> user = userService.findById(userId);
-		listImage = user.get().getImages();
+		if (user.isPresent())
+		{
+			listImage = imageService.findAllById(user.get());
+		}else 
+		{
+			System.out.println("Khong tim thay thong tin nguoi dung" + userId);
+		}
+
 		return ResponseEntity.ok(listImage);
 	}
 	/**
@@ -121,6 +135,7 @@ public class ProfileController {
 	
 	@GetMapping("/getSearch")
 	public ResponseEntity<?> getSearch(Long userId){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user = userService.findById(userId).get();
 		return ResponseEntity.ok(user.getSearchCriteria());
 	}

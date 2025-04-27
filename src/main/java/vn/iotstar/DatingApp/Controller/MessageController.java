@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.iotstar.DatingApp.Entity.MatchList;
 import vn.iotstar.DatingApp.Entity.Message;
 import vn.iotstar.DatingApp.Entity.Users;
+import vn.iotstar.DatingApp.Model.MessageModel;
 import vn.iotstar.DatingApp.Model.Response.MessageItem;
 import vn.iotstar.DatingApp.Repository.MatchListRepository;
 import vn.iotstar.DatingApp.Service.IMessageService;
@@ -36,7 +39,9 @@ public class MessageController {
 	 */
 	@GetMapping("/getListMatch")
 	public ResponseEntity<?> getListMatch(Long user1)
+	
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user = userService.findById(user1).get();
 		List<MatchList> listmatch = matchRepo.findAllByUser1OrUser2AndStatus(user, "MATCH");
 		List<MessageItem> listItem = new ArrayList<>();
@@ -74,12 +79,16 @@ public class MessageController {
 	// them ham lay danh sach tin nhan với so luong co dinh, neu nguoi dung luot ve tin nhan cu hon thi  moi hien dan dan
 	@GetMapping("/getMessages")
 	public ResponseEntity<?> getMessages(
+			
 	        @RequestParam("user1") Long user1,
 	        @RequestParam("user2") Long user2,
 	        @RequestParam("limit") int limit,
 	        @RequestParam("offset") int offset) {
-		
-	    List<Message> messages = messService.findMessages(user1, user2, limit, offset);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Users u1 = userService.findById(user1).get();
+		Users u2 = userService.findById(user2).get();
+	    List<MessageModel> messages = messService.findMessages(u1, u2, limit, offset);
+	    System.out.println(messages.size());
 	    return ResponseEntity.ok(messages);
 	}
 }

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ public class SearchCardController {
 	@PostMapping("/find/SexualOrientation")
 	public ResponseEntity<?> findBySexualOrientation(String SexualOrientation)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List<Users> listUser = new ArrayList<>();
 		listUser = userService.findBySexualOrientation(SexualOrientation);
 		return ResponseEntity.ok(listUser);
@@ -30,6 +33,7 @@ public class SearchCardController {
 	@PostMapping("/find/interests")
 	public ResponseEntity<?> findByInterests(String interests)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List<Users> listUser = new ArrayList<>();
 		listUser = userService.findByInterests(interests);
 		return ResponseEntity.ok(listUser);
@@ -39,6 +43,7 @@ public class SearchCardController {
 	@PostMapping("/find/zodiacSign")
 	public ResponseEntity<?> findByZodiacSign(String zodiacSign)
 	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		List<Users> listUser = new ArrayList<>();
 		listUser = userService.findByZodiacSign(zodiacSign);
 		return ResponseEntity.ok(listUser);

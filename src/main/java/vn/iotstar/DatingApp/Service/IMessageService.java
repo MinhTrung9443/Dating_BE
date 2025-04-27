@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import vn.iotstar.DatingApp.Entity.Message;
+import vn.iotstar.DatingApp.Entity.Users;
+import vn.iotstar.DatingApp.Model.MessageModel;
 
 @Service
 public interface IMessageService {
@@ -16,6 +18,6 @@ public interface IMessageService {
 
 	Optional<Message> findLatestMessage(Long fromUser, Long receiverId);
 
-	List<Message> findMessages(Long user1, Long user2, int limit, int offset);
+	List<MessageModel> findMessages(Users user1, Users user2, int limit, int offset);
 
 }
