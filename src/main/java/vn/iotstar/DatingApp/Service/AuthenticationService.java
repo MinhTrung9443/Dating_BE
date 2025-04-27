@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.Users;
-import vn.iotstar.DatingApp.Model.Auth.LoginAccountModel;
-import vn.iotstar.DatingApp.Model.Auth.RegisterAccountModel;
+import vn.iotstar.DatingApp.Model.Auth.LoginRequest;
+import vn.iotstar.DatingApp.Model.Auth.RegisterRequest;
 import vn.iotstar.DatingApp.Repository.AccountRepository;
 import vn.iotstar.DatingApp.Repository.UsersRepository;
 
@@ -36,13 +36,13 @@ public class AuthenticationService {
 	}
 	
 	@Transactional
-	public Account signup(RegisterAccountModel input) {
+	public Account signup(RegisterRequest input) {
 		Account user = new Account();
 
 		user.setEmail(input.getEmail());
 		user.setPassword(passwordEncoder.encode(input.getPassword()));
 		// set role to USER
-		user.setRole("ROLE_USER");
+		user.setRole("USER");
 		
 		// infor -> ??? check
 		Users info = Users.builder()
@@ -67,7 +67,7 @@ public class AuthenticationService {
 		return accountRepository.save(user);
 	}
 	
-	public Account authenticate(LoginAccountModel input) {
+	public Account authenticate(LoginRequest input) {
 		authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(input.getEmail(), input.getPassword())
 				);

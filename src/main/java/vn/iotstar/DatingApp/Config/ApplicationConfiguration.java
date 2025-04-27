@@ -19,10 +19,6 @@ public class ApplicationConfiguration {
 	@Autowired
 	private AccountRepository accountRepo;
 	
-	public ApplicationConfiguration(AccountRepository accountRepo) {
-		this.accountRepo = accountRepo;
-	}
-	
 	// add userdetails service bean
 	@Bean
 	UserDetailsService userDetailsService() {
