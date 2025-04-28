@@ -63,9 +63,9 @@ public class ChatController {
 		} else {
 			String privateChannel = getPrivateChannel(message.getToUser().getId());
 		    System.out.println("Gửi tin nhắn tới: " + privateChannel);
-		    messTemplate.convertAndSend(privateChannel, message);
+		    messTemplate.convertAndSend(privateChannel, receiveMessage);
 		 // Gửi notify frame tới người nhận
-            sendNotification(message.getToUser().getId(), "Bạn có tin nhắn mới từ " + user1.getName(), "NOTIFY");
+            //sendNotification(message.getToUser().getId(), "Bạn có tin nhắn mới từ " + user1.getName(), "NOTIFY");
 		}
 	}
 	
