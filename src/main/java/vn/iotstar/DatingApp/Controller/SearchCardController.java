@@ -33,10 +33,14 @@ public class SearchCardController {
 	@PostMapping("/find/interests")
 	public ResponseEntity<?> findByInterests(String interests)
 	{
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		List<Users> listUser = new ArrayList<>();
-		listUser = userService.findByInterests(interests);
-		return ResponseEntity.ok(listUser);
+		try {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			List<Users> listUser = new ArrayList<>();
+			listUser = userService.findByInterests(interests);
+			return ResponseEntity.ok(listUser);
+		} catch (Exception e) {
+			return ResponseEntity.ok(List.of());
+		}
 		
 	}
 	

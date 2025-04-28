@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.iotstar.DatingApp.Entity.Image;
+import vn.iotstar.DatingApp.Entity.SearchCriteria;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.ImageModel;
 import vn.iotstar.DatingApp.Model.UserModel;
@@ -140,4 +141,16 @@ public class ProfileController {
 		return ResponseEntity.ok(user.getSearchCriteria());
 	}
 	
+	@PostMapping("/updateSearch")
+	public ResponseEntity<?> updateSearch(@RequestBody SearchCriteria searchCriteria)
+	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Users user = userService.findById(searchCriteria.getId()).get();
+		SearchCriteria searchCrit = user.getSearchCriteria();
+		searchCriteria.setId(searchCrit.getId());
+		searchCriteria.setUsers(user);
+		BeanUtils.copyProperties(searchCriteria, searchCrit);
+		userService.save(user);
+		return ResponseEntity.ok(null);
+	}
 }
