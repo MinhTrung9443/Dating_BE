@@ -92,7 +92,7 @@ public class AuthenticationController {
 		AuthResponse res = authenticationService.login(email, password);
 		
 		return ResponseEntity.ok(ApiResponse.builder()
-				.message("Đã xác minh OTP").status(200).data(res)
+				.message("Đã xác minh OTP").status(200).data(null)
 				.build());
 	}
 	
