@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -59,14 +61,17 @@ public class Users {
     @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("Users-images")
     private List<Image> images = new ArrayList<>();
     
     @JsonIgnore
     @OneToOne(mappedBy = "users", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("Users-searchCriteria")
     private SearchCriteria searchCriteria;
     
     @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<MatchList> matchLists = new ArrayList<>();
 }

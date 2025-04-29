@@ -35,5 +35,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 			@Param("zodiacSign") String zodiacSign, @Param("personalityType") String personalityType,
 			@Param("interests") String interests, @Param("latitude") Double latitude,
 			@Param("longitude") Double longitude, @Param("maxDistance") Double maxDistance);
-
+	List<Users> findBySexualOrientation(String sexualOrientation);
+	List<Users> findByInterests(String interests);
+	List<Users> findByZodiacSign(String zodiacSign);
 }

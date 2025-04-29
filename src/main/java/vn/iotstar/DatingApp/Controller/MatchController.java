@@ -36,6 +36,7 @@ public class MatchController {
 	 */
 	@GetMapping("/suggestions")
 	public ResponseEntity<List<Users>> getSuggestedMatches() {
+		
 	    try {
 	        List<Users> suggestions = matchService.getSuggestedMatches();
 	        return ResponseEntity.ok(suggestions);

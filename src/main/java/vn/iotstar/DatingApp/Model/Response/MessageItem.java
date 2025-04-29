@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageItem {
-	private Long id;
+	private int senderId;
     private String name;
     private String content;
     private int count;

@@ -18,24 +18,24 @@ import vn.iotstar.DatingApp.Service.AccountUserDetailsService;
 public class ApplicationConfiguration {
 	@Autowired
 	private AccountRepository accountRepo;
-	
+
 	// add userdetails service bean
 	@Bean
 	UserDetailsService userDetailsService() {
 		return new AccountUserDetailsService(accountRepo);
 	}
-	
+
 	// add password encoder
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-	
+
 	@Bean
 	AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -43,4 +43,5 @@ public class ApplicationConfiguration {
 		authProvider.setPasswordEncoder(passwordEncoder());
 		return authProvider;
 	}
+
 }

@@ -3,6 +3,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
@@ -41,11 +44,14 @@ public class MatchList {
     
     @ManyToOne
     @JoinColumn(name = "user1_id", nullable = false)
+    @JsonBackReference("matchlist-user1")
     private Users user1; 
 
     @ManyToOne
     @JoinColumn(name = "user2_id", nullable = false)
-    private Users user2;
+    @JsonBackReference("matchlist-user2")
+    private Users user2; 
+
     
     /**
      * Đã xem profile hay chưa

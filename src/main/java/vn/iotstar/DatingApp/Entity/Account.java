@@ -31,4 +31,6 @@ public class Account {
     private String password;
     // add role
     private String role;
+    // add status: onl / offline
+    private boolean status;
 }

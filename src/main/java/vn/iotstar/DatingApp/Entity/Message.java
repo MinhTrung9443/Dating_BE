@@ -1,6 +1,9 @@
 package vn.iotstar.DatingApp.Entity;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,5 +39,7 @@ public class Message {
     
     @ManyToOne
     @JoinColumn(name = "match_id")
+    @JsonBackReference("matchlist-message")
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private MatchList matchlist;
 }
