@@ -65,7 +65,7 @@ public class AuthenticationController {
 		// khác pass
 		if(!password.equals(confirmedPassword)) {
 			return ResponseEntity.ok(ApiResponse.builder()
-					.message("Mat khau khong khop").status(400).data(null)
+					.message("Mat khau khong khop").status(400).data(email)
 												.build());
 		}
 		
@@ -92,7 +92,7 @@ public class AuthenticationController {
 		AuthResponse res = authenticationService.login(email, password);
 		
 		return ResponseEntity.ok(ApiResponse.builder()
-				.message("Đã xác minh OTP").status(200).data(null)
+				.message("Đã xác minh OTP").status(200).data(res)
 				.build());
 	}
 	

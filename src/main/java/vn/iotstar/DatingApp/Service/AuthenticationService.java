@@ -122,8 +122,7 @@ public class AuthenticationService {
     public AuthResponse login(String email, String password) {
         logger.info("Processing login request for email: {}", email);
         try {
-            // 1. Xác thực bằng AuthenticationManager
-            // Nó sẽ tự động gọi UserDetailsService và PasswordEncoder bạn đã cấu hình
+   
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
