@@ -163,10 +163,6 @@ public class AuthenticationService {
        accountRepository.findAccountByEmail(identifier)
                 .orElseThrow(() -> {
                     logger.warn("Password reset OTP request for non-existent identifier: {}", identifier);
-                    // Quan trọng: Không nên báo trực tiếp là "không tìm thấy" để tránh lộ thông tin
-                    // Có thể chỉ log lỗi và trả về thành công giả lập, hoặc throw UserNotFoundException
-                    // nhưng ControllerAdvice sẽ cần trả về 200 OK với message chung chung.
-                    // Ở đây tạm thời throw để rõ ràng logic, nhưng cần xem xét lại về bảo mật.
                     return new UsernameNotFoundException("Không tìm thấy tài khoản nào với thông tin cung cấp.");
                 });
      
@@ -176,15 +172,10 @@ public class AuthenticationService {
 
         // 3. Gửi OTP (qua email hoặc sms tùy vào identifier)
         try {
-             // if (isEmail(identifier)) { // Cần hàm kiểm tra nếu hỗ trợ cả SĐT
-                  emailService.sendOtp(identifier, otp); // Nên có hàm riêng trong MailService
-             // } else {
-             //    smsService.sendOtpSms(identifier, otp);
-             // }
+            emailService.sendOtp(identifier, otp); 
             logger.info("Password reset OTP sent successfully to {}", identifier);
         } catch (Exception e) {
             logger.error("Failed to send password reset OTP to {}: {}", identifier, e.getMessage(), e);
-            // Ném lại exception
             throw new RuntimeException("Không thể gửi mã OTP đặt lại mật khẩu. Vui lòng thử lại.", e);
         }
     }
@@ -198,10 +189,6 @@ public class AuthenticationService {
         if (!requestDto.getNewPassword().equals(requestDto.getConfirmPassword())) {
             throw new RuntimeException("Mật khẩu mới và xác nhận mật khẩu không khớp.");
         }
-        // (Tùy chọn) Kiểm tra độ mạnh mật khẩu mới
-        // if (!isPasswordStrongEnough(requestDto.getNewPassword())) {
-        //    throw new WeakPasswordException("Mật khẩu mới không đủ mạnh.");
-        // }
 
         // 2. Xác thực OTP (Sử dụng OtpPurpose.PASSWORD_RESET)
         boolean isValidOtp = otpService.verifyOtp(identifier, otp);

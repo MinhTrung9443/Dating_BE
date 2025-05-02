@@ -346,4 +346,10 @@ public class MatchServiceImpl implements MatchService {
 		return usersRepository.findByAccount(acc)
 		        .orElseThrow(() -> new RuntimeException("Current user not found"));
 	}
+	// Helper tìm User hoặc ném Exception
+    private Users findUserByIdOrThrow(Long userId) {
+        return usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + userId));
+    }
 }
+

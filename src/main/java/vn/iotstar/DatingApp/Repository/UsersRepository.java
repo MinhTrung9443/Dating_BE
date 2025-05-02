@@ -38,4 +38,5 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 	List<Users> findBySexualOrientation(String sexualOrientation);
 	List<Users> findByInterests(String interests);
 	List<Users> findByZodiacSign(String zodiacSign);
+	
 }

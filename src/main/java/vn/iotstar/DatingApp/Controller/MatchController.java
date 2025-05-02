@@ -3,10 +3,12 @@ package vn.iotstar.DatingApp.Controller;
 import java.util.List;
 import java.util.Map;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,19 +17,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.MatchList;
 import vn.iotstar.DatingApp.Entity.Message;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.Request.MessageRequest;
+import vn.iotstar.DatingApp.Service.AccountService;
 import vn.iotstar.DatingApp.Service.MatchService;
+import vn.iotstar.DatingApp.Service.UsersService;
 
 @RestController
 @RequestMapping("/api/users")
 public class MatchController {
-//	private static final Logger logger = LoggerFactory.getLogger(FilterServiceImpl.class);
+//	private static final Logger logger = LoggerFactory.getLogger(MatchController.class);
 //	
 	@Autowired
 	private MatchService matchService;
+	@Autowired
+	private AccountService accountService;
+	@Autowired
+	private UsersService userService;
 	
 	/**
 	 * API lấy danh sách người dùng được đề xuất ghép đôi
@@ -171,4 +180,17 @@ public class MatchController {
 	    List<Users> dislikedUsers = matchService.getDislikedUsers();
 	    return ResponseEntity.ok(dislikedUsers);
 	}
+	
+	// Helper method để lấy user hiện tại
+    private Users getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
+        String userEmail = authentication.getName();
+        Account currentAcc = accountService.findAccountByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản cho email: " + userEmail));
+        return userService.findByAccount(currentAcc)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin người dùng cho tài khoản: " + userEmail));
+    }
 }
