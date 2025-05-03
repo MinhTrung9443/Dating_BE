@@ -24,6 +24,7 @@ import vn.iotstar.DatingApp.Entity.SearchCriteria;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.ImageModel;
 import vn.iotstar.DatingApp.Model.UserModel;
+import vn.iotstar.DatingApp.Repository.SearchCriteriaRepository;
 import vn.iotstar.DatingApp.Service.IImageService;
 import vn.iotstar.DatingApp.Service.IUserService;
 
@@ -34,7 +35,8 @@ public class ProfileController {
 	IUserService userService;
 	@Autowired
 	IImageService imageService;
-	
+	@Autowired
+	SearchCriteriaRepository searchRepo;
 	/**
 	 * API lấy thông tin người dùng
 	 * 
@@ -138,7 +140,7 @@ public class ProfileController {
 	public ResponseEntity<?> getSearch(Long userId){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user = userService.findById(userId).get();
-		return ResponseEntity.ok(user.getSearchCriteria());
+		return ResponseEntity.ok(user.getSearchCriteria() == null ? new SearchCriteria() : user.getSearchCriteria());
 	}
 	
 	@PostMapping("/updateSearch")
@@ -147,10 +149,23 @@ public class ProfileController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Users user = userService.findById(searchCriteria.getId()).get();
 		SearchCriteria searchCrit = user.getSearchCriteria();
-		searchCriteria.setId(searchCrit.getId());
-		searchCriteria.setUsers(user);
-		BeanUtils.copyProperties(searchCriteria, searchCrit);
-		userService.save(user);
+		if (searchCrit != null)
+		{
+			System.out.println("khong null");
+			searchCriteria.setId(searchCrit.getId());
+			searchCriteria.setUsers(user);
+			BeanUtils.copyProperties(searchCriteria, searchCrit);
+			userService.save(user);
+		}
+		else
+		{
+			System.out.println(" null");
+			SearchCriteria searchCrit2 = new SearchCriteria();
+			BeanUtils.copyProperties(searchCriteria, searchCrit2);
+			searchCrit2.setUsers(user);
+			searchCrit2.setId(null);
+			searchRepo.save(searchCrit2);
+		}
 		return ResponseEntity.ok(null);
 	}
 }

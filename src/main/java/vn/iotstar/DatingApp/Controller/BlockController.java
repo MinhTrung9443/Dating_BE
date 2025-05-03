@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/block")
 public class BlockController {
-	@Autowired
-	IUserService userService;
+
 	@Autowired
 	IBlockService blockService;
 	/**
@@ -38,27 +37,9 @@ public class BlockController {
 	@PostMapping("/")
 	public ResponseEntity<?> blockUser(@RequestBody MatchListModel blockUser) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Users user1 = userService.findById(blockUser.getUser1()).get();
-		Users user2 = userService.findById(blockUser.getUser2()).get();
-		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);
-		if (!matchList.isPresent())
-		{
-			MatchList block = new MatchList();
-			BeanUtils.copyProperties(blockUser, block);
-			block.setUser1(user1);
-			block.setUser2(user2);
-			block.setCreatedAt(new Date());
-			blockService.save(block);
-		}
-		// da match roi goi ham update
-		else {
-			MatchList block = matchList.get();
-			block.setStatus("BLOCK");
-			block.setCreatedAt(new Date());
-			blockService.save(block);
-		}
+		int result = blockService.blockUser(blockUser);
 		
-		return ResponseEntity.ok(null);
+		return result == 1 ? ResponseEntity.ok(null) : ResponseEntity.badRequest().body(null);
 	}
 	/**
 	 * API lấy danh sách người dùng bị blok
@@ -69,9 +50,7 @@ public class BlockController {
 	public ResponseEntity<?> getAllBlockuser(Long userId)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Users user = userService.findById(userId).get();
-		List<MatchList> listMatchBlockUser = blockService.findAllByUser1AndStatus(user,"BLOCK");
-		
+		List<MatchList> listMatchBlockUser = blockService.getAllBlockuser(userId);
 		return ResponseEntity.ok(listMatchBlockUser);
 	}
 	/**
@@ -82,16 +61,9 @@ public class BlockController {
 	@PostMapping("/delete")
 	public ResponseEntity<?> unBlockUser(@RequestBody MatchListModel unBlockUser){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Users user1 = userService.findById(unBlockUser.getUser1()).get();
-		Users user2 = userService.findById(unBlockUser.getUser2()).get();
-		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);
-		if (matchList.isPresent())
-		{
-			blockService.delete(matchList.get());
-			return ResponseEntity.ok(null);
-		}
+		int result = blockService.unBlockUser(unBlockUser);
 		
-		return ResponseEntity.badRequest().body(null);
+		return result == 1 ? ResponseEntity.ok(null) : ResponseEntity.badRequest().body(null);
 	}
 	
 	
