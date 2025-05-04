@@ -1,10 +1,12 @@
 package vn.iotstar.DatingApp.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -12,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import vn.iotstar.DatingApp.Dto.MatchFeedDto;
 import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.MatchList;
 import vn.iotstar.DatingApp.Entity.Message;
@@ -31,6 +34,7 @@ public class MatchServiceImpl implements MatchService {
 	private MatchListRepository matchListRepository;
 	@Autowired
 	private MessageRepository messageRepository;
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	/**
 	 * Xử lý khi người dùng hiện tại "like" một người dùng khác
@@ -346,10 +350,65 @@ public class MatchServiceImpl implements MatchService {
 		return usersRepository.findByAccount(acc)
 		        .orElseThrow(() -> new RuntimeException("Current user not found"));
 	}
+	
+	@Override
+	public List<MatchFeedDto> getMatchesForFeed(Users currentUser) {
+        // Get matches where current user is either user1 or user2 and status is MATCHED
+        List<MatchList> matchesAsUser1 = matchListRepository.findByUser1AndStatus(currentUser, "MATCHED");
+        List<MatchList> matchesAsUser2 = matchListRepository.findByUser2AndStatus(currentUser, "MATCHED");
+        
+        // Combine both lists and convert to DTOs
+        return Stream.concat(matchesAsUser1.stream(), matchesAsUser2.stream())
+                .map(this::convertToMatchFeedDto)
+                .collect(Collectors.toList());
+    }
+    
+    private MatchFeedDto convertToMatchFeedDto(MatchList matchList) {
+        Users currentUser = getCurrentUser();
+        Users otherUser = matchList.getUser1().equals(currentUser) ? matchList.getUser2() : matchList.getUser1();
+        
+        return MatchFeedDto.builder()
+                .id(matchList.getId().toString())
+                .name(otherUser.getName())
+                .pictureUrl(getFirstUserImage(otherUser))
+                .location(otherUser.getAddress())
+                .date(dateFormat.format(matchList.getCreatedAt()))
+                .isNewMatch(isNewMatch(matchList.getCreatedAt()))
+                .build();
+    }
+    
+    private String getFirstUserImage(Users user) {
+        if (user.getImages() == null || user.getImages().isEmpty()) {
+            return ""; // or default image URL
+        }
+        return user.getImages().get(0).getImage();
+    }
+	
 	// Helper tìm User hoặc ném Exception
-    private Users findUserByIdOrThrow(Long userId) {
-        return usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + userId));
+//    private Users findUserByIdOrThrow(Long userId) {
+//        return usersRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với ID: " + userId));
+//    }
+    
+    //----- Mapper for MatchFeed
+    private MatchFeedDto toMatchFeedDto(MatchList matchList) {
+        // Determine which user is the other user in the match (assuming current user is user1)
+        Users otherUser = matchList.getUser2();
+        
+        return new MatchFeedDto(
+            matchList.getId().toString(),
+            otherUser.getName(),
+            otherUser.getImages().get(0).getImage(), // Assuming Users entity has getPicture() method
+            otherUser.getAddress(), // Assuming Users entity has getLocation() method
+            dateFormat.format(matchList.getCreatedAt()),
+            isNewMatch(matchList.getCreatedAt())
+        );
+    }
+    
+    private boolean isNewMatch(Date matchDate) {
+        // Consider a match as "new" if it's within the last 7 days
+        long oneWeekInMillis = 7 * 24 * 60 * 60 * 1000L;
+        return (System.currentTimeMillis() - matchDate.getTime()) < oneWeekInMillis;
     }
 }
 

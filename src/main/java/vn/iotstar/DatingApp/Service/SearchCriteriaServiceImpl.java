@@ -260,41 +260,4 @@ public class SearchCriteriaServiceImpl implements SearchCriteriaService {
         logger.info("--- SERVICE saveSettings END --- Returning Entity: {}", resultCriteria);
 	}
 
-	// --- Hàm tính khoảng cách Haversine ---
-	// (Nên đặt trong một lớp Utils riêng)
-//	private static final int EARTH_RADIUS_KM = 6371;
-//
-//	private Double calculateDistanceHaversine(double lat1, double lon1, double lat2, double lon2) {
-//		// Kiểm tra giá trị đầu vào cơ bản
-//		if (Double.isNaN(lat1) || Double.isNaN(lon1) || Double.isNaN(lat2) || Double.isNaN(lon2)) {
-//			return null; // Trả về null nếu tọa độ không hợp lệ
-//		}
-//		// Tránh tính toán nếu trùng tọa độ
-//		if (Math.abs(lat1 - lat2) < 1e-9 && Math.abs(lon1 - lon2) < 1e-9) {
-//			return 0.0;
-//		}
-//
-//		double latDistance = Math.toRadians(lat2 - lat1);
-//		double lonDistance = Math.toRadians(lon2 - lon1);
-//		double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) + Math.cos(Math.toRadians(lat1))
-//				* Math.cos(Math.toRadians(lat2)) * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-//		// Đảm bảo giá trị bên trong acos nằm trong khoảng [-1, 1] để tránh NaN
-//		double valueForAcos = Math.sqrt(a) / Math.sqrt(1 - a);
-//		if (Double.isNaN(valueForAcos) || Double.isInfinite(valueForAcos)) {
-//			// Xử lý trường hợp đặc biệt khi a gần bằng 1 (điểm đối cực)
-//			if (a > 1.0)
-//				a = 1.0; // Giới hạn a = 1
-//			if (a == 1.0)
-//				return Math.round(EARTH_RADIUS_KM * Math.PI * 10.0) / 10.0; // Nửa chu vi trái đất
-//			valueForAcos = Math.sqrt(a) / Math.sqrt(1 - a); // Tính lại
-//		}
-//		if (Double.isNaN(valueForAcos))
-//			return null; // Vẫn NaN thì trả null
-//
-//		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//		double distance = EARTH_RADIUS_KM * c;
-//
-//		return Math.round(distance * 10.0) / 10.0; // Làm tròn
-//	}
-
 }

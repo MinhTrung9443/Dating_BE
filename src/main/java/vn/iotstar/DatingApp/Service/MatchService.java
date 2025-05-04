@@ -2,6 +2,7 @@ package vn.iotstar.DatingApp.Service;
 
 import java.util.List;
 
+import vn.iotstar.DatingApp.Dto.MatchFeedDto;
 import vn.iotstar.DatingApp.Entity.MatchList;
 import vn.iotstar.DatingApp.Entity.Message;
 import vn.iotstar.DatingApp.Entity.Users;
@@ -91,4 +92,6 @@ public interface MatchService {
 	 * @return Số lượt like nhận được
 	 */
 	int countPendingLikes();
+
+	List<MatchFeedDto> getMatchesForFeed(Users currentUser);
 }

@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import vn.iotstar.DatingApp.Dto.MatchFeedDto;
 import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.MatchList;
 import vn.iotstar.DatingApp.Entity.Message;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.Request.MessageRequest;
+import vn.iotstar.DatingApp.Model.Response.ApiResponse;
 import vn.iotstar.DatingApp.Service.AccountService;
 import vn.iotstar.DatingApp.Service.MatchService;
 import vn.iotstar.DatingApp.Service.UsersService;
@@ -59,9 +61,13 @@ public class MatchController {
 	 * @return Danh sách match
 	 */
 	@GetMapping("/matches")
-	public ResponseEntity<List<MatchList>> getMatches() {
-	    List<MatchList> matches = matchService.getMatches();
-	    return ResponseEntity.ok(matches);
+	public ResponseEntity<ApiResponse> getMatches() {
+	    List<MatchFeedDto> matches = matchService.getMatchesForFeed(getCurrentUser());
+	    return ResponseEntity.ok(ApiResponse.builder()
+	    		.message("List matched")
+	    		.status(200)
+	    		.data(matches)
+	    		.build());
 	}
 
 	/**
