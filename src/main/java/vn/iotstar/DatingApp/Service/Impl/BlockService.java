@@ -21,7 +21,7 @@ public class BlockService implements IBlockService {
 		return matchListRepository.save(entity);
 	}
 
-	
+
 
 	@Override
 	public List<MatchList> findAllByUser1AndStatus(Users user1, String status) {
@@ -30,6 +30,7 @@ public class BlockService implements IBlockService {
 
 
 
+	@Override
 	public Optional<MatchList> findByUser1AndUser2(Users user1, Users user2) {
 		return matchListRepository.findByUser1AndUser2(user1, user2);
 	}
@@ -38,7 +39,7 @@ public class BlockService implements IBlockService {
 	public void delete(MatchList entity) {
 		matchListRepository.delete(entity);
 	}
-	
-	
+
+
 
 }

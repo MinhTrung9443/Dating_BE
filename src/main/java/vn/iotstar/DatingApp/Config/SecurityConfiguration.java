@@ -26,7 +26,7 @@ public class SecurityConfiguration {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf -> csrf.disable()) // Disables CSRF protection
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/api/auth/**", "/error", "/swagger-ui/**", "/v3/api-docs/**").permitAll()// Public
+						.requestMatchers("/api/auth/**", "/error", "/swagger-ui/**", "/v3/api-docs/**","/test/**").permitAll()// Public
 																														// endpoints
 						.anyRequest().authenticated() // All other endpoints require authentication
 				).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless

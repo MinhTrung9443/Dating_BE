@@ -26,7 +26,7 @@ public class Account {
     private Long id;
 
     private String email;
-    
+
     @JsonIgnore
     private String password;
     // add role

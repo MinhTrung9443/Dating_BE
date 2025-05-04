@@ -20,7 +20,7 @@ public class AuthenticationController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-	
+
 	// REGISTER
 	/***
 	 	Endpoint: POST /api/auth/register/request-otp
@@ -36,7 +36,7 @@ public class AuthenticationController {
 				.message("Đã gửi OTP").status(200).data(email)
 											.build());
 	}
-	
+
 	/***
 	 	Endpoint: POST /api/v1/auth/register/verify-otp
 		Mục đích: Xác thực mã OTP người dùng nhập. Không tạo tài khoản hoàn chỉnh ngay.
@@ -51,7 +51,7 @@ public class AuthenticationController {
 				.message("Đã xác minh OTP").status(200).data(email)
 											.build());
 	}
-	
+
 	/***
 		Endpoint: POST /api/v1/auth/register/set-password
 		Mục đích: Đặt mật khẩu lần đầu sau khi OTP đã được xác thực, hoàn tất tạo tài khoản và đăng nhập.
@@ -68,15 +68,15 @@ public class AuthenticationController {
 					.message("Mat khau khong khop").status(400).data(email)
 												.build());
 		}
-		
+
 		AuthResponse res = authenticationService.setPasswordAndRegister(email, password);
-		
+
 		return ResponseEntity.ok(ApiResponse.builder()
 				.message("Đã lưu tài khoản").status(200).data(res)
 											.build());
 	}
-	
-	
+
+
 	// LOGIN
 	/***
 		Đăng nhập bằng Email/Mật khẩu
@@ -88,14 +88,14 @@ public class AuthenticationController {
  	*/
 	@PostMapping("/login/email")
 	public ResponseEntity<ApiResponse> login(String email, String password) {
-		
+
 		AuthResponse res = authenticationService.login(email, password);
-		
+
 		return ResponseEntity.ok(ApiResponse.builder()
 				.message("Đã xác minh OTP").status(200).data(res)
 				.build());
 	}
-	
+
 	/***
 	 	Endpoint: POST /api/v1/auth/login/social
 		Mục đích: Xác thực người dùng thông qua token từ nhà cung cấp mạng xã hội, đăng nhập hoặc tạo tài khoản nếu chưa có.
@@ -103,7 +103,7 @@ public class AuthenticationController {
 		Success Response (200 OK / 201 Created): { "message": "Login/Registration successful", "access_token": "...", "refresh_token": "...", "user": {...} }
 		Error Responses: 400 (Provider không hợp lệ, thiếu token), 401 (Token provider không hợp lệ), 500 (Lỗi xác thực với provider).
 	 */
-	
+
 	// FORGOT PASSWORD
 	/***
 	 	Endpoint: POST /api/v1/auth/password/request-reset-otp
@@ -122,7 +122,7 @@ public class AuthenticationController {
                 .data(null)
                 .build());
     }
-	
+
 	/***
 	  	Endpoint: POST /api/v1/auth/password/reset
 		Mục đích: Xác thực OTP đặt lại mật khẩu và cập nhật mật khẩu mới cho người dùng.
@@ -139,7 +139,7 @@ public class AuthenticationController {
                 .data(resetPasswordDto)
                 .build());
     }
-	
+
 	// LOGOUT
 	/***
 		Endpoint: POST /api/v1/auth/logout

@@ -37,7 +37,7 @@ public class AuthenticationService {
 	private OtpCodeRepository otpRepository;
 	@Autowired
 	private PasswordEncoder encoder;
-	
+
 	@Autowired
 	private JwtService jwtService;
 	@Autowired
@@ -85,7 +85,7 @@ public class AuthenticationService {
 	@Transactional // Quan trọng
 	public AuthResponse setPasswordAndRegister(String email, String password) {
 		logger.info("Setting password and completing registration.");
-		// 4. Tạo Account mới 
+		// 4. Tạo Account mới
 		Account account = Account.builder()
 				.email(email).password(encoder.encode(password))
 				.role("USER").status(true)
@@ -110,7 +110,7 @@ public class AuthenticationService {
 				.expiresIn(jwtService.getExpirationTime())
 				.build();
 	}
-	
+
 	// LOGIN
 	/**
      * Đăng nhập bằng email và mật khẩu.
@@ -122,7 +122,7 @@ public class AuthenticationService {
     public AuthResponse login(String email, String password) {
         logger.info("Processing login request for email: {}", email);
         try {
-   
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
@@ -153,7 +153,7 @@ public class AuthenticationService {
              throw new RuntimeException("Đã xảy ra lỗi trong quá trình đăng nhập.", e);
         }
     }
-    
+
     // FORGOT PASSWORD
     public void requestPasswordResetOtp(String identifier) {
         logger.info("Processing password reset OTP request for identifier: {}", identifier);
@@ -165,21 +165,21 @@ public class AuthenticationService {
                     logger.warn("Password reset OTP request for non-existent identifier: {}", identifier);
                     return new UsernameNotFoundException("Không tìm thấy tài khoản nào với thông tin cung cấp.");
                 });
-     
+
 
         // 2. Tạo và lưu OTP (Sử dụng OtpPurpose.PASSWORD_RESET)
         String otp = otpService.generateAndStoreOtp(identifier);
 
         // 3. Gửi OTP (qua email hoặc sms tùy vào identifier)
         try {
-            emailService.sendOtp(identifier, otp); 
+            emailService.sendOtp(identifier, otp);
             logger.info("Password reset OTP sent successfully to {}", identifier);
         } catch (Exception e) {
             logger.error("Failed to send password reset OTP to {}: {}", identifier, e.getMessage(), e);
             throw new RuntimeException("Không thể gửi mã OTP đặt lại mật khẩu. Vui lòng thử lại.", e);
         }
     }
-    
+
     public void resetPassword(ResetPasswordRequest requestDto) {
         String identifier = requestDto.getIdentifier();
         String otp = requestDto.getOtp();

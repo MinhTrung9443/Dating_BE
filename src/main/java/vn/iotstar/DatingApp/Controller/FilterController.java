@@ -44,24 +44,24 @@ public class FilterController {
     public ResponseEntity<List<Users>> filterUsers() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String userEmail = authentication.getName();
-		
+
 		Account cuurrentAcc = accountService.findAccountByEmail(userEmail).get();
-		
+
 		Users currentUser = userService.findByAccount(cuurrentAcc).get();
 		SearchCriteria filterRequest = searchService.findByUsers(currentUser).get();
-        
-        List<Users> users = filterService.filterUsers(filterRequest.getMinAge(), 
-                filterRequest.getMaxAge(), 
+
+        List<Users> users = filterService.filterUsers(filterRequest.getMinAge(),
+                filterRequest.getMaxAge(),
                 filterRequest.getZodiacSign(),
-                filterRequest.getPersonalityType(), 
+                filterRequest.getPersonalityType(),
                 filterRequest.getInterests(),
-                currentUser.getLatitude(), 
-                currentUser.getLongitude(), 
+                currentUser.getLatitude(),
+                currentUser.getLongitude(),
                 filterRequest.getDistance());
         logger.info("Found {} users matching the criteria", users.size());
         return ResponseEntity.ok(users);
     }
-	
+
 	/***
 	 	Endpoint: GET /api/v1/users/me/discovery-settings
 		Mục đích: Lấy cài đặt đã lưu trong bản ghi SearchCriteria của người dùng.
@@ -89,8 +89,8 @@ public class FilterController {
 
 		return response;
 	}
-	
-	
+
+
 	/***
 		Endpoint: PUT /api/v1/users/me/discovery-settings
 		Mục đích: Cập nhật bản ghi SearchCriteria của người dùng với các giá trị mới.
@@ -115,7 +115,7 @@ public class FilterController {
         		.data(updatedCriteria)
         		.build());
     }
-	
+
 	/***
 	 	Endpoint: GET /api/v1/discovery/cards
 		Mục đích: Lấy danh sách người dùng khác phù hợp với bộ lọc của người dùng hiện tại.
@@ -127,7 +127,7 @@ public class FilterController {
 //		Users currentUser = userService.findByAccount(acc).get();
         logger.info("Fetching ALL discovery cards for user: {}", currentUser.getAccount().getEmail());
 
-        List<ProfileDto> cards = searchService.getDiscoveryCards(currentUser); 
+        List<ProfileDto> cards = searchService.getDiscoveryCards(currentUser);
 
         logger.info("Returning {} profile cards.", cards.size());
         return ResponseEntity.ok(ApiResponse.builder()
@@ -136,7 +136,7 @@ public class FilterController {
         		.data(cards)
         		.build());
 	}
-	
+
 	// Helper method để lấy user hiện tại
     private Users getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

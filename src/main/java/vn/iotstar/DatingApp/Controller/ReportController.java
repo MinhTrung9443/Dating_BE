@@ -19,11 +19,11 @@ import vn.iotstar.DatingApp.Service.IReportService;
 public class ReportController {
 	@Autowired
 	IReportService reportService;
-	
+
 	/**
 	 * Báo cáo người dùng
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@PostMapping("/reportUser")
 	public ResponseEntity<?> reportUser(@RequestBody Reports report)

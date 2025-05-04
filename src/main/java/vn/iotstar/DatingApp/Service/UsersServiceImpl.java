@@ -26,7 +26,7 @@ public class UsersServiceImpl implements UsersService{
 	public Optional<Users> findByAccount(Account account) {
 		return userRepository.findByAccount(account);
 	}
-	
+
 	@Override
 	public Integer calculateAge(Date dob) {
         if (dob == null) {
@@ -59,5 +59,5 @@ public class UsersServiceImpl implements UsersService{
             return null; // Trả về null khi có lỗi
         }
     }
-	
+
 }

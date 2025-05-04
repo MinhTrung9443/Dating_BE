@@ -3,8 +3,6 @@ package vn.iotstar.DatingApp.Controller;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,22 +28,22 @@ import vn.iotstar.DatingApp.Service.UsersService;
 @RequestMapping("/api/users")
 public class MatchController {
 //	private static final Logger logger = LoggerFactory.getLogger(MatchController.class);
-//	
+//
 	@Autowired
 	private MatchService matchService;
 	@Autowired
 	private AccountService accountService;
 	@Autowired
 	private UsersService userService;
-	
+
 	/**
 	 * API lấy danh sách người dùng được đề xuất ghép đôi
-	 * 
+	 *
 	 * @return Danh sách người dùng được đề xuất
 	 */
 	@GetMapping("/suggestions")
 	public ResponseEntity<List<Users>> getSuggestedMatches() {
-		
+
 	    try {
 	        List<Users> suggestions = matchService.getSuggestedMatches();
 	        return ResponseEntity.ok(suggestions);
@@ -54,10 +52,10 @@ public class MatchController {
 	        return ResponseEntity.ok(List.of()); // Trả về danh sách rỗng thay vì lỗi
 	    }
 	}
-	
+
 	/**
 	 * API lấy danh sách match đã thành công
-	 * 
+	 *
 	 * @return Danh sách match
 	 */
 	@GetMapping("/matches")
@@ -65,10 +63,10 @@ public class MatchController {
 	    List<MatchList> matches = matchService.getMatches();
 	    return ResponseEntity.ok(matches);
 	}
-	
+
 	/**
 	 * API xem profile của người dùng khác
-	 * 
+	 *
 	 * @param id ID của người dùng cần xem profile
 	 * @return Thông tin profile
 	 */
@@ -77,10 +75,10 @@ public class MatchController {
 	    Users user = matchService.viewProfile(id);
 	    return ResponseEntity.ok(user);
 	}
-	
+
 	/**
 	 * API "like" một người dùng khác
-	 * 
+	 *
 	 * @param id ID của người dùng được like
 	 * @return Kết quả like
 	 */
@@ -93,10 +91,10 @@ public class MatchController {
 		    return ResponseEntity.ok("Đã like người dùng có ID: " + id);
 		}
 	}
-	
+
 	/**
 	 * API "dislike" một người dùng khác
-	 * 
+	 *
 	 * @param id ID của người dùng được dislike
 	 * @return Kết quả dislike
 	 */
@@ -105,10 +103,10 @@ public class MatchController {
 		matchService.dislikeUser(id);
 		return ResponseEntity.ok("Đã dislike người dùng có ID: " + id);
 	}
-	
+
 	/**
 	 * API "rewind" lại hành động dislike
-	 * 
+	 *
 	 * @param id ID của người dùng đã dislike trước đó
 	 * @return Kết quả rewind
 	 */
@@ -121,10 +119,10 @@ public class MatchController {
 	        return ResponseEntity.badRequest().body("Không tìm thấy lịch sử dislike cho người dùng có ID: " + id);
 	    }
 	}
-	
+
 	/**
 	 * API gửi tin nhắn cho người dùng khác
-	 * 
+	 *
 	 * @param id ID của người dùng nhận tin nhắn
 	 * @param messageRequest Nội dung tin nhắn
 	 * @return Tin nhắn đã gửi
@@ -134,10 +132,10 @@ public class MatchController {
 	    Message sentMessage = matchService.sendMessage(id, messageRequest.getContent());
 	    return ResponseEntity.ok(sentMessage);
 	}
-	
+
 	/**
 	 * API xem danh sách người đã like mình (Tính năng Gold của Tinder)
-	 * 
+	 *
 	 * @return Danh sách người đã like mình
 	 */
 	@GetMapping("/my-likers")
@@ -145,10 +143,10 @@ public class MatchController {
 	    List<Users> likers = matchService.getMyLikers();
 	    return ResponseEntity.ok(likers);
 	}
-	
+
 	/**
 	 * API đếm số người đã like mình
-	 * 
+	 *
 	 * @return Số lượng người đã like
 	 */
 	@GetMapping("/pending-likes/count")
@@ -156,10 +154,10 @@ public class MatchController {
 	    int count = matchService.countPendingLikes();
 	    return ResponseEntity.ok(Map.of("count", count));
 	}
-	
+
 	/**
 	 * API lấy danh sách lượt like gần đây
-	 * 
+	 *
 	 * @param limit Số lượng lượt like cần lấy
 	 * @return Danh sách lượt like
 	 */
@@ -169,10 +167,10 @@ public class MatchController {
 	    List<MatchList> recentLikes = matchService.getRecentLikes(limit);
 	    return ResponseEntity.ok(recentLikes);
 	}
-	
+
 	/**
 	 * API lấy danh sách người đã dislike
-	 * 
+	 *
 	 * @return Danh sách người đã dislike
 	 */
 	@GetMapping("/disliked")
@@ -180,7 +178,7 @@ public class MatchController {
 	    List<Users> dislikedUsers = matchService.getDislikedUsers();
 	    return ResponseEntity.ok(dislikedUsers);
 	}
-	
+
 	// Helper method để lấy user hiện tại
     private Users getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

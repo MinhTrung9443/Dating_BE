@@ -3,8 +3,8 @@ package vn.iotstar.DatingApp.Service;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.transaction.Transactional;
 import vn.iotstar.DatingApp.Dto.ProfileDto;
+import vn.iotstar.DatingApp.Dto.SearchCriteriaDto;
 import vn.iotstar.DatingApp.Entity.SearchCriteria;
 import vn.iotstar.DatingApp.Entity.Users;
 
@@ -24,5 +24,9 @@ public interface SearchCriteriaService {
 	 * @return Một List chứa tất cả ProfileCardDto phù hợp.
 	 */
 	List<ProfileDto> getDiscoveryCards(Users currentUser);
+
+	void saveSettings(Long userId, SearchCriteriaDto settings);
+
+	SearchCriteria getSettings(Long userId);
 
 }

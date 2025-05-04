@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import vn.iotstar.DatingApp.Dto.ProfileDto;
+import vn.iotstar.DatingApp.Dto.SearchCriteriaDto;
 import vn.iotstar.DatingApp.Entity.SearchCriteria;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Repository.MatchListRepository;
@@ -185,6 +186,78 @@ public class SearchCriteriaServiceImpl implements SearchCriteriaService {
 				.location(location)
 				.age(18)
 				.build();
+	}
+
+	@Override
+	public SearchCriteria getSettings(Long userId) {
+		SearchCriteria res = null;
+		Users currentUser = usersRepo.findById(userId).get();
+
+		res = searchRepo.findByUsers(currentUser).get();
+
+		return res;
+	}
+
+	@Transactional
+	@Override
+	public void saveSettings(Long userId, SearchCriteriaDto criteriaDto) {
+		logger.info("--- SERVICE saveSettings START (using DTO) ---");
+        logger.info("Service received userId: {}", userId);
+        logger.info("Service received DTO: {}", criteriaDto);
+
+        Users user = usersRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found for saveSettings: " + userId));
+        logger.info("Found user ID: {}", user.getId());
+
+        SearchCriteria criteriaToUpdate = user.getSearchCriteria();
+        if (criteriaToUpdate == null) {
+            logger.info("No existing SearchCriteria found, creating new one.");
+            criteriaToUpdate = new SearchCriteria();
+            criteriaToUpdate.setUsers(user);
+            user.setSearchCriteria(criteriaToUpdate);
+        } else {
+            logger.info("Found existing SearchCriteria with ID: {}", criteriaToUpdate.getId());
+        }
+
+        logger.info("Current entity values before update: datingPurpose={}, minAge={}, maxAge={}, distance={}, interests={}, zodiacSign={}, personalityType={}",
+                criteriaToUpdate.getDatingPurpose(), criteriaToUpdate.getMinAge(), criteriaToUpdate.getMaxAge(),
+                criteriaToUpdate.getDistance(), criteriaToUpdate.getInterests(), criteriaToUpdate.getZodiacSign(),
+                criteriaToUpdate.getPersonalityType());
+
+        // Apply updates from DTO to Entity, only if DTO fields are non-null
+        if (criteriaDto.getDatingPurpose() != null) {
+            criteriaToUpdate.setDatingPurpose(criteriaDto.getDatingPurpose());
+        }
+        if (criteriaDto.getMinAge() != null) {
+            criteriaToUpdate.setMinAge(criteriaDto.getMinAge()); // No .intValue() needed if entity uses Integer
+        }
+        if (criteriaDto.getMaxAge() != null) {
+            criteriaToUpdate.setMaxAge(criteriaDto.getMaxAge()); // No .intValue() needed if entity uses Integer
+        }
+        if (criteriaDto.getDistance() != null) {
+            criteriaToUpdate.setDistance(criteriaDto.getDistance());
+        }
+        if (criteriaDto.getInterests() != null) {
+            criteriaToUpdate.setInterests(criteriaDto.getInterests());
+        }
+        if (criteriaDto.getZodiacSign() != null) {
+            criteriaToUpdate.setZodiacSign(criteriaDto.getZodiacSign());
+        }
+        if (criteriaDto.getPersonalityType() != null) {
+            criteriaToUpdate.setPersonalityType(criteriaDto.getPersonalityType());
+        }
+
+        logger.info("Entity values after applying updates from DTO: datingPurpose={}, minAge={}, maxAge={}, distance={}, interests={}, zodiacSign={}, personalityType={}",
+                criteriaToUpdate.getDatingPurpose(), criteriaToUpdate.getMinAge(), criteriaToUpdate.getMaxAge(),
+                criteriaToUpdate.getDistance(), criteriaToUpdate.getInterests(), criteriaToUpdate.getZodiacSign(),
+                criteriaToUpdate.getPersonalityType());
+
+        logger.info("Saving User entity (will cascade to SearchCriteria)...");
+        Users savedUser = usersRepo.save(user);
+        logger.info("User entity saved.");
+
+        SearchCriteria resultCriteria = savedUser.getSearchCriteria();
+        logger.info("--- SERVICE saveSettings END --- Returning Entity: {}", resultCriteria);
 	}
 
 	// --- Hàm tính khoảng cách Haversine ---

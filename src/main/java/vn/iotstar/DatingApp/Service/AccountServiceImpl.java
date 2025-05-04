@@ -13,9 +13,9 @@ import vn.iotstar.DatingApp.Repository.AccountRepository;
 public class AccountServiceImpl implements AccountService{
 	@Autowired
 	private AccountRepository accountRepo;
-	@Autowired 
+	@Autowired
 	private PasswordEncoder passEncoder;
-	
+
 	@Override
 	public Account addNewAccount(Account newAccount) {
 		// encode pass
@@ -29,6 +29,6 @@ public class AccountServiceImpl implements AccountService{
 	public Optional<Account> findAccountByEmail(String email) {
 		return accountRepo.findAccountByEmail(email);
 	}
-	
-	
+
+
 }

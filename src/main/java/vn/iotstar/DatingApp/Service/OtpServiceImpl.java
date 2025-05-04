@@ -1,11 +1,11 @@
 package vn.iotstar.DatingApp.Service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -16,12 +16,12 @@ import vn.iotstar.DatingApp.Repository.OtpCodeRepository;
 public class OtpServiceImpl implements OtpService {
 
 	private static final Logger logger = LoggerFactory.getLogger(OtpServiceImpl.class);
-	private static final long OTP_VALIDITY_MINUTES = 5; 
+	private static final long OTP_VALIDITY_MINUTES = 5;
 	@Autowired
-	private OtpCodeRepository otpCodeRepository; 
+	private OtpCodeRepository otpCodeRepository;
 
 	@Override
-	@Transactional 
+	@Transactional
 	public String generateAndStoreOtp(String identifier) {
 
 		otpCodeRepository.deleteByIdentifier(identifier);

@@ -16,11 +16,11 @@ public class MailServiceImpl implements MailService{
         message.setTo(email);
         message.setSubject("Lấy lại mật khẩu của UTEEXPRESS");
         message.setText("Your OTP code is: " + otp);
-        
+
         // Gửi email
         javaMailSender.send(message);
     }
-    
+
 
     @Override
 	public void sendRegisterOtp(String email, String otp) {
@@ -28,7 +28,7 @@ public class MailServiceImpl implements MailService{
         message.setTo(email);
         message.setSubject("Xác nhận đăng kí tài khoản");
         message.setText("Your OTP code is: " + otp);
-        
+
         // Gửi email
         javaMailSender.send(message);
     }

@@ -1,7 +1,6 @@
 package vn.iotstar.DatingApp.Controller;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
@@ -18,7 +17,6 @@ import vn.iotstar.DatingApp.Entity.Message;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.MessageModel;
 import vn.iotstar.DatingApp.Repository.MatchListRepository;
-import vn.iotstar.DatingApp.Repository.MessageRepository;
 import vn.iotstar.DatingApp.Repository.UsersRepository;
 import vn.iotstar.DatingApp.Service.IMessageService;
 
@@ -34,13 +32,13 @@ public class ChatController {
 	MatchListRepository matchlistRepo;
 	@Autowired
 	private SimpMessagingTemplate messTemplate;
-	
+
 	private final ObjectMapper objectMapper = new ObjectMapper();
-	
+
 	/**
-	 * gửi tin nhắn 
-	 * 
-	 * 
+	 * gửi tin nhắn
+	 *
+	 *
 	 */
 	@MessageMapping("/sendPrivateMessage")
 	public void sendPrivateMessage(@Payload MessageModel receiveMessage)
@@ -48,14 +46,14 @@ public class ChatController {
 		Message message = new Message();
 		BeanUtils.copyProperties(receiveMessage, message);
 		message.setSentAt(new Date());
-		
+
 		Users user1 = userRepo.findById(receiveMessage.getFromUser()).get();
 		Users user2 = userRepo.findById(receiveMessage.getToUser()).get();
 		message.setFromUser(user1);
 		message.setToUser(user2);
 		MatchList matchList = matchlistRepo.findByUser1AndUser2(user1, user2).get();
 		message.setMatchlist(matchList);
-		
+
 		messService.save(message);
 
 		if (messTemplate == null) {
@@ -68,11 +66,11 @@ public class ChatController {
             sendNotification(message.getToUser().getId(), "Bạn có tin nhắn mới từ " + user1.getName(), "NOTIFY");
 		}
 	}
-	
+
 	/**
 	 * Hàm tạo frame thông báo (chức năng chưa hoàn thiện)
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	private void sendNotification(Long userId, String notifyContent, String notifyType) {
 	    try {
@@ -97,8 +95,8 @@ public class ChatController {
 	}
 	/**
 	 * tạo private channel : kênh cá nhân của người dùng
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	private String getPrivateChannel(Long userID)
 	{

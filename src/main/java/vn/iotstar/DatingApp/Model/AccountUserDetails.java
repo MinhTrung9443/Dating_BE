@@ -13,13 +13,13 @@ import vn.iotstar.DatingApp.Entity.Account;
 public class AccountUserDetails implements UserDetails {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	// create account for security
 	private Account acc;
-	
+
 	public AccountUserDetails(Account acc) {
 		this.acc = acc;
 	}
@@ -43,7 +43,7 @@ public class AccountUserDetails implements UserDetails {
 		// TODO Auto-generated method stub
 		return acc.getEmail();
 	}
-	
+
 	@Override
 	public boolean isAccountNonExpired() {
 	    return true;  // Change to false if you have an expiration mechanism

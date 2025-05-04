@@ -34,7 +34,7 @@ public class MatchServiceImpl implements MatchService {
 
 	/**
 	 * Xử lý khi người dùng hiện tại "like" một người dùng khác
-	 * 
+	 *
 	 * @param targetUserId ID của người dùng được like
 	 * @return true nếu match thành công (cả hai đã like nhau), false nếu chỉ là like đơn phương
 	 */
@@ -90,7 +90,7 @@ public class MatchServiceImpl implements MatchService {
 		} else {
 			// Kiểm tra xem đã có trạng thái dislike hay chưa
 			Optional<MatchList> existingMatch = matchListRepository.findByUser1AndUser2(currentUser, targetUser);
-			
+
 			if (existingMatch.isPresent()) {
 				MatchList match = existingMatch.get();
 				// Nếu đã dislike trước đó, cập nhật thành like
@@ -108,7 +108,7 @@ public class MatchServiceImpl implements MatchService {
 				matchListRepository.save(newMatch);
 			}
 		}
-		
+
 		return isMatched;
 	}
 
@@ -116,20 +116,20 @@ public class MatchServiceImpl implements MatchService {
 	@Transactional
     public void dislikeUser(Long targetUserId) {
         System.out.println("User " + targetUserId + " disliked.");
-        
+
         // Lấy thông tin người dùng hiện tại
         Users currentUser = getCurrentUser();
         Users targetUser = usersRepository.findById(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
-        
+
         // Kiểm tra nếu dislike chính mình
         if (currentUser.getId().equals(targetUserId)) {
             throw new RuntimeException("Cannot dislike yourself");
         }
-        
+
         // Kiểm tra xem đã có bản ghi nào chưa
         Optional<MatchList> existingMatch = matchListRepository.findByUser1AndUser2(currentUser, targetUser);
-        
+
         if (existingMatch.isPresent()) {
             // Cập nhật bản ghi hiện có thành DISLIKE
             MatchList match = existingMatch.get();
@@ -147,7 +147,7 @@ public class MatchServiceImpl implements MatchService {
             matchListRepository.save(newMatch);
         }
     }
-	
+
 	@Override
 	@Transactional
 	public Message sendMessage(Long targetUserId, String content) {
@@ -155,23 +155,23 @@ public class MatchServiceImpl implements MatchService {
 	    Users currentUser = getCurrentUser();
 	    Users targetUser = usersRepository.findById(targetUserId)
 	            .orElseThrow(() -> new RuntimeException("Target user not found"));
-	    
+
 	    // Kiểm tra nếu nhắn tin cho chính mình
 	    if (currentUser.getId().equals(targetUserId)) {
 	        throw new RuntimeException("Cannot send message to yourself");
 	    }
-	    
+
 	    // Kiểm tra xem đã match chưa
 	    Optional<MatchList> match1 = matchListRepository.findByUser1AndUser2AndStatus(currentUser, targetUser, "MATCHED");
 	    Optional<MatchList> match2 = matchListRepository.findByUser1AndUser2AndStatus(targetUser, currentUser, "MATCHED");
-	    
+
 	    if (match1.isEmpty() && match2.isEmpty()) {
 	        throw new RuntimeException("Cannot send message without matching first");
 	    }
-	    
+
 	    // Lấy match object
 	    MatchList matchList = match1.isPresent() ? match1.get() : match2.get();
-	    
+
 	    // Tạo tin nhắn mới
 	    Message message = new Message();
 	    message.setFromUser(currentUser);
@@ -181,7 +181,7 @@ public class MatchServiceImpl implements MatchService {
 	    message.setLiked(false);
 	    message.setRead(false);
 	    message.setMatchlist(matchList);
-	    
+
 	    return messageRepository.save(message);
 	}
 
@@ -192,16 +192,16 @@ public class MatchServiceImpl implements MatchService {
 	    Users currentUser = getCurrentUser();
 	    Users targetUser = usersRepository.findById(targetUserId)
 	            .orElseThrow(() -> new RuntimeException("Target user not found"));
-	    
+
 	    // Kiểm tra nếu là chính mình
 	    if (currentUser.getId().equals(targetUserId)) {
 	        throw new RuntimeException("Cannot rewind dislike for yourself");
 	    }
-	    
+
 	    // Tìm bản ghi dislike gần nhất
 	    Optional<MatchList> existingMatch = matchListRepository.findByUser1AndUser2AndStatus(
 	            currentUser, targetUser, "DISLIKE");
-	    
+
 	    if (existingMatch.isPresent()) {
 	        MatchList match = existingMatch.get();
 	        // Cập nhật trạng thái thành REWIND
@@ -210,7 +210,7 @@ public class MatchServiceImpl implements MatchService {
 	        matchListRepository.save(match);
 	        return true;
 	    }
-	    
+
 	    return false;
 	}
 
@@ -221,17 +221,17 @@ public class MatchServiceImpl implements MatchService {
 	    Users currentUser = getCurrentUser();
 	    Users targetUser = usersRepository.findById(targetUserId)
 	            .orElseThrow(() -> new RuntimeException("Target user not found"));
-	    
+
 	    // Cập nhật trạng thái đã xem profile
 	    Optional<MatchList> existingMatch = matchListRepository.findByUser1AndUser2(currentUser, targetUser);
-	    
+
 	    if (existingMatch.isPresent()) {
 	        MatchList match = existingMatch.get();
 	        match.setProfileViewed(true);
 	        match.setUpdatedAt(new Date());
 	        matchListRepository.save(match);
 	    }
-	    
+
 	    return targetUser;
 	}
 
@@ -240,16 +240,16 @@ public class MatchServiceImpl implements MatchService {
 	    try {
 	        // Lấy thông tin người dùng hiện tại
 	        Users currentUser = getCurrentUser();
-	        
+
 	        // Lấy danh sách tất cả người dùng
 	        List<Users> allUsers = usersRepository.findAll();
-	        
+
 	        // Lọc các người dùng đã like/dislike
 	        List<MatchList> interactions = matchListRepository.findByUser1(currentUser);
 	        List<Long> interactedUserIds = interactions.stream()
 	                .map(match -> match.getUser2().getId())
 	                .collect(Collectors.toList());
-	        
+
 	        // Lọc ra những người chưa tương tác và khác chính mình
 	        return allUsers.stream()
 	                .filter(user -> !user.getId().equals(currentUser.getId()) && !interactedUserIds.contains(user.getId()))
@@ -266,15 +266,15 @@ public class MatchServiceImpl implements MatchService {
 	public List<MatchList> getMatches() {
 	    // Lấy thông tin người dùng hiện tại
 	    Users currentUser = getCurrentUser();
-	    
+
 	    // Tìm tất cả các match đã thành công
 	    List<MatchList> matchesAsUser1 = matchListRepository.findByUser1AndStatus(currentUser, "MATCHED");
 	    List<MatchList> matchesAsUser2 = matchListRepository.findByUser2AndStatus(currentUser, "MATCHED");
-	    
+
 	    // Gộp lại và loại bỏ trùng lặp
 	    List<MatchList> allMatches = new ArrayList<>(matchesAsUser1);
 	    allMatches.addAll(matchesAsUser2);
-	    
+
 	    return allMatches;
 	}
 
@@ -282,10 +282,10 @@ public class MatchServiceImpl implements MatchService {
 	public List<Users> getMyLikers() {
 	    // Lấy thông tin người dùng hiện tại
 	    Users currentUser = getCurrentUser();
-	    
+
 	    // Tìm các bản ghi mà người khác đã like mình nhưng chưa match
 	    List<MatchList> pendingLikes = matchListRepository.findByUser2AndStatus(currentUser, "LIKE");
-	    
+
 	    // Lấy thông tin user từ các bản ghi trên
 	    return pendingLikes.stream()
 	            .map(MatchList::getUser1)
@@ -296,16 +296,16 @@ public class MatchServiceImpl implements MatchService {
 	public List<MatchList> getRecentLikes(int limit) {
 	    // Lấy thông tin người dùng hiện tại
 	    Users currentUser = getCurrentUser();
-	    
+
 	    // Tìm các like gần đây của người dùng hiện tại
 	    List<MatchList> recentLikes = matchListRepository.findByUser1AndStatusOrderByUpdatedAtDesc(
 	            currentUser, "LIKE");
-	    
+
 	    // Giới hạn số lượng kết quả trả về
 	    if (recentLikes.size() > limit) {
 	        return recentLikes.subList(0, limit);
 	    }
-	    
+
 	    return recentLikes;
 	}
 
@@ -313,10 +313,10 @@ public class MatchServiceImpl implements MatchService {
 	public List<Users> getDislikedUsers() {
 	    // Lấy thông tin người dùng hiện tại
 	    Users currentUser = getCurrentUser();
-	    
+
 	    // Tìm các bản ghi dislike
 	    List<MatchList> dislikes = matchListRepository.findByUser1AndStatus(currentUser, "DISLIKE");
-	    
+
 	    // Lấy thông tin user từ các bản ghi trên
 	    return dislikes.stream()
 	            .map(MatchList::getUser2)
@@ -327,14 +327,14 @@ public class MatchServiceImpl implements MatchService {
 	public int countPendingLikes() {
 	    // Lấy thông tin người dùng hiện tại
 	    Users currentUser = getCurrentUser();
-	    
+
 	    // Đếm số lượt like nhận được mà chưa match
 	    return matchListRepository.countByUser2AndStatus(currentUser, "LIKE");
 	}
 
 	/**
 	 * Lấy thông tin người dùng hiện tại
-	 * 
+	 *
 	 * @return Thông tin người dùng hiện tại
 	 */
 	private Users getCurrentUser() {
