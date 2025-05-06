@@ -24,7 +24,8 @@ import vn.iotstar.DatingApp.Service.IUserService;
 @RestController
 @RequestMapping("/block")
 public class BlockController {
-
+	@Autowired
+	IUserService userService;
 	@Autowired
 	IBlockService blockService;
 	/**
