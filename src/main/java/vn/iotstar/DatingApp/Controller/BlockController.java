@@ -22,7 +22,7 @@ import vn.iotstar.DatingApp.Service.IUserService;
 
 
 @RestController
-@RequestMapping("/block")
+@RequestMapping("/api/block")
 public class BlockController {
 	@Autowired
 	IUserService userService;
@@ -36,6 +36,9 @@ public class BlockController {
 	@PostMapping("/")
 	public ResponseEntity<?> blockUser(@RequestBody MatchListModel blockUser) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users user1 = userService.findById(blockUser.getUser1()).get();
 		Users user2 = userService.findById(blockUser.getUser2()).get();
 		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);
@@ -67,6 +70,9 @@ public class BlockController {
 	public ResponseEntity<?> getAllBlockuser(Long userId)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users user = userService.findById(userId).get();
 		List<MatchList> listMatchBlockUser = blockService.findAllByUser1AndStatus(user,"BLOCK");
 
@@ -80,6 +86,9 @@ public class BlockController {
 	@PostMapping("/delete")
 	public ResponseEntity<?> unBlockUser(@RequestBody MatchListModel unBlockUser){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users user1 = userService.findById(unBlockUser.getUser1()).get();
 		Users user2 = userService.findById(unBlockUser.getUser2()).get();
 		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);

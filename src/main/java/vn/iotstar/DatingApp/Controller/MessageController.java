@@ -40,6 +40,9 @@ public class MessageController {
 
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users user = userService.findById(user1).get();
 		List<MatchList> listmatch = matchRepo.findAllByUser1OrUser2AndStatus(user, "MATCH");
 		List<MessageItem> listItem = new ArrayList<>();
@@ -83,6 +86,9 @@ public class MessageController {
 	        @RequestParam("limit") int limit,
 	        @RequestParam("offset") int offset) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users u1 = userService.findById(user1).get();
 		Users u2 = userService.findById(user2).get();
 	    List<MessageModel> messages = messService.findMessages(u1, u2, limit, offset);

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.Users;
 
 @Service
@@ -19,5 +20,7 @@ public interface IUserService {
 	List<Users> findBySexualOrientation(String sexualOrientation);
 
 	List<Users> findByZodiacSign(String zodiacSign);
+
+	Optional<Users> findByAccount(Account account);
 
 }

@@ -19,17 +19,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.Image;
 import vn.iotstar.DatingApp.Entity.SearchCriteria;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.ImageModel;
 import vn.iotstar.DatingApp.Model.UserModel;
+import vn.iotstar.DatingApp.Repository.AccountRepository;
 import vn.iotstar.DatingApp.Repository.SearchCriteriaRepository;
 import vn.iotstar.DatingApp.Service.IImageService;
 import vn.iotstar.DatingApp.Service.IUserService;
 
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("/api/profile")
 public class ProfileController {
 	@Autowired
 	IUserService userService;
@@ -37,6 +39,9 @@ public class ProfileController {
 	IImageService imageService;
 	@Autowired
 	SearchCriteriaRepository searchRepo;
+	@Autowired
+	AccountRepository accountRepository;
+	
 	/**
 	 * API lấy thông tin người dùng
 	 *
@@ -46,6 +51,9 @@ public class ProfileController {
 	public ResponseEntity<?> getProfile(Long userId)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users user;
 		Optional<Users> optionalUser = userService.findById(userId);
 		if (optionalUser.isPresent())
@@ -54,6 +62,26 @@ public class ProfileController {
 			return ResponseEntity.ok(user);
 		}
 		return ResponseEntity.badRequest().body(null);
+	}
+	
+	@PostMapping("/getUser")
+	public ResponseEntity<?> getProfile()
+	{
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
+		String email = authentication.getName();
+		Account account = accountRepository.findAccountByEmail(email).get();
+		
+		Users user;
+		Optional<Users> optionalUser = userService.findByAccount(account);
+		if (optionalUser.isPresent())
+		{
+			user = optionalUser.get();
+			return ResponseEntity.ok(user);
+		}
+		return ResponseEntity.badRequest().body(null);		
 	}
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy MM dd", Locale.getDefault());
 
@@ -66,6 +94,9 @@ public class ProfileController {
 	public ResponseEntity<?> updateProfile(@RequestBody UserModel userInfo) throws ParseException
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Date date = formatter.parse(userInfo.getBirthday());
 		Optional<Users> user = userService.findById(userInfo.getId());
 		if (user.isPresent()) {
@@ -86,6 +117,9 @@ public class ProfileController {
 	public ResponseEntity<?> removeImage(@RequestBody ImageModel image)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Image delImage = new Image();
 		delImage = imageService.findById(image.getId()).get();
 		delImage.setUser(null);
@@ -102,6 +136,9 @@ public class ProfileController {
 	public ResponseEntity<?> addImage(@RequestBody ImageModel image)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Image newImage = new Image();
 		BeanUtils.copyProperties(image, newImage);
 		Optional<Users> user = userService.findById(image.getUserId());
@@ -117,7 +154,11 @@ public class ProfileController {
 	@PostMapping("/getAllImage")
 	public ResponseEntity<?> getAllImage(Long userId)
 	{
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		List<Image> listImage = new ArrayList<>();
 		Optional<Users> user = userService.findById(userId);
 		if (user.isPresent())
@@ -139,6 +180,9 @@ public class ProfileController {
 	@GetMapping("/getSearch")
 	public ResponseEntity<?> getSearch(Long userId){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users user = userService.findById(userId).get();
 		return ResponseEntity.ok(user.getSearchCriteria() == null ? new SearchCriteria() : user.getSearchCriteria());
 	}
@@ -147,6 +191,9 @@ public class ProfileController {
 	public ResponseEntity<?> updateSearch(@RequestBody SearchCriteria searchCriteria)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		Users user = userService.findById(searchCriteria.getId()).get();
 		SearchCriteria searchCrit = user.getSearchCriteria();
 		if (searchCrit != null)

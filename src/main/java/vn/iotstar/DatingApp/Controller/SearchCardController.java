@@ -15,7 +15,7 @@ import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Service.IUserService;
 
 @RestController
-@RequestMapping("/searchCard")
+@RequestMapping("/api/searchCard")
 public class SearchCardController {
 	@Autowired
 	IUserService userService;
@@ -23,6 +23,9 @@ public class SearchCardController {
 	public ResponseEntity<?> findBySexualOrientation(String SexualOrientation)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		List<Users> listUser = new ArrayList<>();
 		listUser = userService.findBySexualOrientation(SexualOrientation);
 		return ResponseEntity.ok(listUser);
@@ -34,6 +37,9 @@ public class SearchCardController {
 	{
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+	            throw new RuntimeException("Người dùng chưa được xác thực");
+	        }
 			List<Users> listUser = new ArrayList<>();
 			listUser = userService.findByInterests(interests);
 			return ResponseEntity.ok(listUser);
@@ -47,6 +53,9 @@ public class SearchCardController {
 	public ResponseEntity<?> findByZodiacSign(String zodiacSign)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		List<Users> listUser = new ArrayList<>();
 		listUser = userService.findByZodiacSign(zodiacSign);
 		return ResponseEntity.ok(listUser);

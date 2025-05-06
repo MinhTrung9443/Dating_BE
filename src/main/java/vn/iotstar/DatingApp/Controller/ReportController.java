@@ -15,7 +15,7 @@ import vn.iotstar.DatingApp.Entity.Reports;
 import vn.iotstar.DatingApp.Service.IReportService;
 
 @RestController
-@RequestMapping("/report")
+@RequestMapping("/api/report")
 public class ReportController {
 	@Autowired
 	IReportService reportService;
@@ -29,6 +29,9 @@ public class ReportController {
 	public ResponseEntity<?> reportUser(@RequestBody Reports report)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Người dùng chưa được xác thực");
+        }
 		report.setReportAt(new Date());
 		reportService.save(report);
 		return ResponseEntity.ok(null);
