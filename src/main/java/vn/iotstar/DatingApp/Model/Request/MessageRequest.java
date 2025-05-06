@@ -9,4 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MessageRequest {
     private String content;
-} 
+}

@@ -16,7 +16,7 @@ public class ReportService implements IReportService {
 	public <S extends Reports> S save(S entity) {
 		return reportRepository.save(entity);
 	}
-	
-	
+
+
 
 }

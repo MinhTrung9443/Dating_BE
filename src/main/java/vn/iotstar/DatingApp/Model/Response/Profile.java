@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageItem {
-	private int senderId;
+public class Profile {
     private String name;
-    private String content;
-    private int count;
-    private String picture;
+    private String imageUrl;
+    private Integer age;
+    private String location;
+
 }

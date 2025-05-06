@@ -39,6 +39,6 @@ public class UserService implements IUserService{
 	public List<Users> findByZodiacSign(String zodiacSign) {
 		return userRepository.findByZodiacSign(zodiacSign);
 	}
-	
-	
+
+
 }

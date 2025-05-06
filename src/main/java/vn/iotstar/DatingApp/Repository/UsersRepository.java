@@ -39,4 +39,5 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 	@Query("SELECT u FROM Users u WHERE u.interests LIKE %:interests%")
 	List<Users> findByInterests(@Param("interests") String interests);
 	List<Users> findByZodiacSign(String zodiacSign);
+
 }

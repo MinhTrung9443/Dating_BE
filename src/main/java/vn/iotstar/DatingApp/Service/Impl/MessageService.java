@@ -14,13 +14,12 @@ import org.springframework.stereotype.Service;
 import vn.iotstar.DatingApp.Entity.Message;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.MessageModel;
-import vn.iotstar.DatingApp.Repository.MatchListRepository;
 import vn.iotstar.DatingApp.Repository.MessageRepository;
 import vn.iotstar.DatingApp.Service.IMessageService;
 
 @Service
 public class MessageService implements IMessageService{
-	@Autowired 
+	@Autowired
 	MessageRepository messageRepository;
 
 	@Override
@@ -38,13 +37,13 @@ public class MessageService implements IMessageService{
 	public Optional<Message> findLatestMessage(Long fromUser, Long receiverId) {
 		return messageRepository.findLatestMessage(fromUser, receiverId);
 	}
-	
+
 	@Override
 	public List<MessageModel> findMessages(Users user1, Users user2, int limit, int offset)
 	{
 		Pageable pageable = PageRequest.of(offset, limit);
 		Page<Message> pageResult = messageRepository.findMessagesBetweenUsers(user1, user2, pageable);
-		
+
 		// Trả về danh sách Message từ pageResult
 		List<Message> list = pageResult.getContent();
 		List<MessageModel> listResponse = new ArrayList<>();

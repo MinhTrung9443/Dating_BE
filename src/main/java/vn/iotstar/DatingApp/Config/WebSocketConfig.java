@@ -17,13 +17,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer{
         // Cấu hình một message broker đơn giản để xử lý các tin nhắn có prefix "/topic"
         // Broker này có thể là một broker in-memory hoặc tích hợp với broker ngoài như ActiveMQ
         registry.enableSimpleBroker("/topic", "/queue");
-        
-        // Nếu bạn có kế hoạch sử dụng các tính năng như gửi tin nhắn đến người dùng cụ thể (ví dụ: "/user/queue"), 
+
+        // Nếu bạn có kế hoạch sử dụng các tính năng như gửi tin nhắn đến người dùng cụ thể (ví dụ: "/user/queue"),
         // bạn có thể cấu hình thêm một điểm đến riêng biệt cho user:
         registry.setUserDestinationPrefix("/user");
 	}
 
-		
+
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/chat").setAllowedOrigins("*");

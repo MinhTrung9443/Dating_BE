@@ -14,7 +14,7 @@ import vn.iotstar.DatingApp.Repository.AccountRepository;
 public class AccountUserDetailsService implements UserDetailsService{
 
 	private final AccountRepository accountRepo;
-	
+
 	public  AccountUserDetailsService(AccountRepository accountRepo) {
 		this.accountRepo = accountRepo;
 	}
@@ -24,7 +24,7 @@ public class AccountUserDetailsService implements UserDetailsService{
 		// TODO Auto-generated method stub
 		Account account = accountRepo.findAccountByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        
+
         // Important: Set the username to the email to ensure it's returned by SecurityContextHolder
 //        return org.springframework.security.core.userdetails.User
 //                .withUsername(account.getEmail()) // Use email as the username

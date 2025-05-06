@@ -1,15 +1,5 @@
 package vn.iotstar.DatingApp.Controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import vn.iotstar.DatingApp.Entity.MatchList;
-import vn.iotstar.DatingApp.Entity.Users;
-import vn.iotstar.DatingApp.Model.MatchListModel;
-import vn.iotstar.DatingApp.Service.IBlockService;
-import vn.iotstar.DatingApp.Service.IUserService;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +11,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import vn.iotstar.DatingApp.Entity.MatchList;
+import vn.iotstar.DatingApp.Entity.Users;
+import vn.iotstar.DatingApp.Model.MatchListModel;
+import vn.iotstar.DatingApp.Service.IBlockService;
+import vn.iotstar.DatingApp.Service.IUserService;
 
 
 @RestController
@@ -31,41 +29,68 @@ public class BlockController {
 	IBlockService blockService;
 	/**
 	 * API block người dùng
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@PostMapping("/")
 	public ResponseEntity<?> blockUser(@RequestBody MatchListModel blockUser) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		int result = blockService.blockUser(blockUser);
-		
-		return result == 1 ? ResponseEntity.ok(null) : ResponseEntity.badRequest().body(null);
+		Users user1 = userService.findById(blockUser.getUser1()).get();
+		Users user2 = userService.findById(blockUser.getUser2()).get();
+		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);
+		if (!matchList.isPresent())
+		{
+			MatchList block = new MatchList();
+			BeanUtils.copyProperties(blockUser, block);
+			block.setUser1(user1);
+			block.setUser2(user2);
+			block.setCreatedAt(new Date());
+			blockService.save(block);
+		}
+		// da match roi goi ham update
+		else {
+			MatchList block = matchList.get();
+			block.setStatus("BLOCK");
+			block.setCreatedAt(new Date());
+			blockService.save(block);
+		}
+
+		return ResponseEntity.ok(null);
 	}
 	/**
 	 * API lấy danh sách người dùng bị blok
-	 * 
+	 *
 	 * @return danh sách người bị block
 	 */
 	@PostMapping("/getAll")
 	public ResponseEntity<?> getAllBlockuser(Long userId)
 	{
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		List<MatchList> listMatchBlockUser = blockService.getAllBlockuser(userId);
+		Users user = userService.findById(userId).get();
+		List<MatchList> listMatchBlockUser = blockService.findAllByUser1AndStatus(user,"BLOCK");
+
 		return ResponseEntity.ok(listMatchBlockUser);
 	}
 	/**
 	 * API bỏ block
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@PostMapping("/delete")
 	public ResponseEntity<?> unBlockUser(@RequestBody MatchListModel unBlockUser){
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		int result = blockService.unBlockUser(unBlockUser);
-		
-		return result == 1 ? ResponseEntity.ok(null) : ResponseEntity.badRequest().body(null);
+		Users user1 = userService.findById(unBlockUser.getUser1()).get();
+		Users user2 = userService.findById(unBlockUser.getUser2()).get();
+		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);
+		if (matchList.isPresent())
+		{
+			blockService.delete(matchList.get());
+			return ResponseEntity.ok(null);
+		}
+
+		return ResponseEntity.badRequest().body(null);
 	}
-	
-	
-	
+
+
+
 }
