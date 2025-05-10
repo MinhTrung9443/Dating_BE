@@ -89,12 +89,20 @@ public class MatchController {
 	 * @return Kết quả like
 	 */
 	@PostMapping("/{id}/like")
-	public ResponseEntity<String> likeUser(@PathVariable Long id) {
+	public ResponseEntity<ApiResponse> likeUser(@PathVariable Long id) {
 		boolean isMatched = matchService.likeUser(id);
 		if (isMatched) {
-		    return ResponseEntity.ok("Đã match với người dùng có ID: " + id);
+			return ResponseEntity.ok(ApiResponse.builder()
+		    		.message("List matched")
+		    		.status(200)
+		    		.data("Đã match với người dùng có ID: " + id)
+		    		.build());
 		} else {
-		    return ResponseEntity.ok("Đã like người dùng có ID: " + id);
+			return ResponseEntity.ok(ApiResponse.builder()
+		    		.message("List matched")
+		    		.status(200)
+		    		.data("Đã like người dùng có ID: " + id)
+		    		.build());
 		}
 	}
 
@@ -105,9 +113,13 @@ public class MatchController {
 	 * @return Kết quả dislike
 	 */
 	@PostMapping("/{id}/dislike")
-	public ResponseEntity<String> dislikeUser(@PathVariable Long id) {
+	public ResponseEntity<ApiResponse> dislikeUser(@PathVariable Long id) {
 		matchService.dislikeUser(id);
-		return ResponseEntity.ok("Đã dislike người dùng có ID: " + id);
+		return ResponseEntity.ok(ApiResponse.builder()
+	    		.message("List matched")
+	    		.status(200)
+	    		.data("Đã dislike người dùng có ID: " + id)
+	    		.build());
 	}
 
 	/**

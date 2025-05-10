@@ -39,37 +39,45 @@ public class MessageController {
 	public ResponseEntity<?> getListMatch(Long user1)
 
 	{
+		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
             throw new RuntimeException("Người dùng chưa được xác thực");
         }
-		Users user = userService.findById(user1).get();
-		List<MatchList> listmatch = matchRepo.findAllByUser1OrUser2AndStatus(user, "MATCH");
-		List<MessageItem> listItem = new ArrayList<>();
-		System.out.println("id user1 truyen toi" + user1 + "listmath : " + listmatch.get(0).getUser1().getId());
-		for (MatchList m : listmatch) {
-			MessageItem messItem = new MessageItem();
-			if (m.getUser1().getId() == user1)
-			{
-				messItem.setSenderId(m.getUser2().getId().intValue());
-				messItem.setName(m.getUser2().getName());
-				messItem.setPicture(m.getUser2().getImages().get(0).getImage());
+		try {
+			Users user = userService.findById(user1).get();
+			List<MatchList> listmatch = matchRepo.findAllByUser1OrUser2AndStatus(user, "MATCHED");
+			List<MessageItem> listItem = new ArrayList<>();
+			System.out.println("id user1 truyen toi" + user1 + "listmath : " + listmatch.get(0).getUser1().getId());
+			for (MatchList m : listmatch) {
+				MessageItem messItem = new MessageItem();
+				if (m.getUser1().getId() == user1)
+				{
+					messItem.setSenderId(m.getUser2().getId().intValue());
+					messItem.setName(m.getUser2().getName());
+					messItem.setPicture(m.getUser2().getImages().get(0).getImage());
+				}
+				else
+				{
+					messItem.setSenderId(m.getUser1().getId().intValue());
+					messItem.setName(m.getUser1().getName());
+					messItem.setPicture(m.getUser1().getImages().get(0).getImage());
+				}
+				messItem.setCount(m.getMessages().size());
+				if (messItem.getCount() != 0)
+				{
+					messItem.setContent(m.getMessages().get(m.getMessages().size()-1).getMessageContent());
+				}
+				listItem.add(messItem);
 			}
-			else
-			{
-				messItem.setSenderId(m.getUser1().getId().intValue());
-				messItem.setName(m.getUser1().getName());
-				messItem.setPicture(m.getUser1().getImages().get(0).getImage());
-			}
-			messItem.setCount(m.getMessages().size());
-			if (messItem.getCount() != 0)
-			{
-				messItem.setContent(m.getMessages().get(m.getMessages().size()-1).getMessageContent());
-			}
-			listItem.add(messItem);
+			
+			return ResponseEntity.ok(listItem);
 		}
-
-		return ResponseEntity.ok(listItem);
+		catch (Exception e) {
+			// TODO: handle exception
+			System.out.println(e.getMessage());
+			return ResponseEntity.badRequest().body(null);
+		}
 	}
 	/**
 	 * API lấy danh sách tin nhắn giữa người dùng, một lần lấy 20 tin nhắn

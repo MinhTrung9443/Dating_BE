@@ -70,23 +70,6 @@ public class MatchServiceImpl implements MatchService {
 				existingMatch.setUpdatedAt(new Date());
 				matchListRepository.save(existingMatch);
 
-				// Tạo hoặc cập nhật bản ghi like của người dùng hiện tại
-				Optional<MatchList> currentMatch = matchListRepository.findByUser1AndUser2(currentUser, targetUser);
-				if (currentMatch.isPresent()) {
-					MatchList match = currentMatch.get();
-					match.setStatus("MATCHED");
-					match.setUpdatedAt(new Date());
-					matchListRepository.save(match);
-				} else {
-					MatchList newMatch = new MatchList();
-					newMatch.setUser1(currentUser);
-					newMatch.setUser2(targetUser);
-					newMatch.setStatus("MATCHED");
-					newMatch.setCreatedAt(new Date());
-					newMatch.setUpdatedAt(new Date());
-					matchListRepository.save(newMatch);
-				}
-
 				isMatched = true;
 				System.out.println(
 						"It's a match! User " + currentUser.getId() + " and User " + targetUserId + " matched!");
@@ -354,11 +337,10 @@ public class MatchServiceImpl implements MatchService {
 	@Override
 	public List<MatchFeedDto> getMatchesForFeed(Users currentUser) {
         // Get matches where current user is either user1 or user2 and status is MATCHED
-        List<MatchList> matchesAsUser1 = matchListRepository.findByUser1AndStatus(currentUser, "MATCHED");
-        List<MatchList> matchesAsUser2 = matchListRepository.findByUser2AndStatus(currentUser, "MATCHED");
-        
-        // Combine both lists and convert to DTOs
-        return Stream.concat(matchesAsUser1.stream(), matchesAsUser2.stream())
+
+        List<MatchList> matchesAsUser2 = matchListRepository.findByUser2AndStatus(currentUser, "LIKE");
+               
+        return matchesAsUser2.stream()
                 .map(this::convertToMatchFeedDto)
                 .collect(Collectors.toList());
     }
@@ -368,7 +350,7 @@ public class MatchServiceImpl implements MatchService {
         Users otherUser = matchList.getUser1().equals(currentUser) ? matchList.getUser2() : matchList.getUser1();
         
         return MatchFeedDto.builder()
-                .id(matchList.getId().toString())
+                .id(otherUser.getId().toString())
                 .name(otherUser.getName())
                 .pictureUrl(getFirstUserImage(otherUser))
                 .location(otherUser.getAddress())
