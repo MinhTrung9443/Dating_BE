@@ -1,7 +1,13 @@
 package vn.iotstar.DatingApp.Controller;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import vn.iotstar.DatingApp.Dto.ProfileDto;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Service.IUserService;
 
@@ -42,11 +49,60 @@ public class SearchCardController {
 	        }
 			List<Users> listUser = new ArrayList<>();
 			listUser = userService.findByInterests(interests);
-			return ResponseEntity.ok(listUser);
+			List<ProfileDto> listProfile = listUser.stream()
+					.map(user -> mapUserToProfileCardDto(user))
+					.collect(Collectors.toList());
+			ResponseEntity.ok(listProfile);
 		} catch (Exception e) {
 			return ResponseEntity.ok(List.of());
 		}
-		
+		return ResponseEntity.ok(List.of());
+	}
+	
+	private ProfileDto mapUserToProfileCardDto(Users targetUser) {
+
+		// Lấy thông tin vị trí hiển thị (Ví dụ: City)
+		String location = targetUser.getAddress();
+		if (location == null || location.trim().isEmpty()) {
+			location = "Không xác định";
+		}
+
+		// Tính khoảng cách
+//		Double distanceKm = null;
+//		if (currentUser.getLatitude() != null && currentUser.getLongitude() != null && targetUser.getLatitude() != null
+//				&& targetUser.getLongitude() != null) {
+//			distanceKm = calculateDistanceHaversine(currentUser.getLatitude(), currentUser.getLongitude(),
+//					targetUser.getLatitude(), targetUser.getLongitude());
+//		}
+
+		// Lấy tên hiển thị
+		String displayName = (targetUser.getName() != null ? targetUser.getName() : "");
+
+		// Tạo DTO bằng Builder
+		return ProfileDto.builder()
+				.id(targetUser.getId())
+				.name(displayName)
+				.imageUrl(targetUser.getImages().get(0).getImage())
+				.location(location)
+				.age(calAge(targetUser.getBirthday()))
+				.build();
+	}
+	
+	private int calAge(Date bd)
+	{
+		if (bd == null) {
+	        return 18; // Hoặc trả về giá trị mặc định, tùy yêu cầu
+	    }
+
+	    // Chuyển Date thành LocalDate
+	    LocalDate birthDate = bd.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	    LocalDate currentDate = LocalDate.now();
+
+	    // Tính khoảng cách giữa hai ngày
+	    Period period = Period.between(birthDate, currentDate);
+
+	    // Trả về số năm (tuổi)
+	    return period.getYears();
 	}
 
 	@PostMapping("/find/zodiacSign")

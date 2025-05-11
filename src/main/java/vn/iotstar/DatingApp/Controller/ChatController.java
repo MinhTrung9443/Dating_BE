@@ -2,6 +2,7 @@ package vn.iotstar.DatingApp.Controller;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +52,12 @@ public class ChatController {
 		Users user2 = userRepo.findById(receiveMessage.getToUser()).get();
 		message.setFromUser(user1);
 		message.setToUser(user2);
-		MatchList matchList = matchlistRepo.findByUser1AndUser2(user1, user2).get();
-		message.setMatchlist(matchList);
+		Optional<MatchList> matchList1 = matchlistRepo.findByUser1AndUser2(user1, user2);
+		Optional<MatchList> matchList2 = matchlistRepo.findByUser1AndUser2(user2, user1);
+		if (matchList1.isPresent())
+			message.setMatchlist(matchList1.get());
+		else 
+			message.setMatchlist(matchList2.get());
 
 		messService.save(message);
 

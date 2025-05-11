@@ -1,6 +1,10 @@
 package vn.iotstar.DatingApp.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -184,8 +188,25 @@ public class SearchCriteriaServiceImpl implements SearchCriteriaService {
 				.name(displayName)
 				.imageUrl(targetUser.getImages().get(0).getImage())
 				.location(location)
-				.age(18)
+				.age(calAge(targetUser.getBirthday()))
 				.build();
+	}
+	
+	private int calAge(Date bd)
+	{
+		if (bd == null) {
+	        return 18; // Hoặc trả về giá trị mặc định, tùy yêu cầu
+	    }
+
+	    // Chuyển Date thành LocalDate
+	    LocalDate birthDate = bd.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	    LocalDate currentDate = LocalDate.now();
+
+	    // Tính khoảng cách giữa hai ngày
+	    Period period = Period.between(birthDate, currentDate);
+
+	    // Trả về số năm (tuổi)
+	    return period.getYears();
 	}
 
 	@Override
