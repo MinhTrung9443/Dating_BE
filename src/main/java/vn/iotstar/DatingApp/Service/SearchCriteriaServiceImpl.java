@@ -192,14 +192,14 @@ public class SearchCriteriaServiceImpl implements SearchCriteriaService {
 				.build();
 	}
 	
-	private int calAge(Date bd)
+	private int calAge(LocalDate bd)
 	{
 		if (bd == null) {
 	        return 18; // Hoặc trả về giá trị mặc định, tùy yêu cầu
 	    }
 
 	    // Chuyển Date thành LocalDate
-	    LocalDate birthDate = bd.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	    LocalDate birthDate = bd;
 	    LocalDate currentDate = LocalDate.now();
 
 	    // Tính khoảng cách giữa hai ngày

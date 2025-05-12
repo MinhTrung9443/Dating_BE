@@ -12,4 +12,6 @@ public interface UsersService {
 
 	Integer calculateAge(Date dob);
 
+	Users updateUserLocation(Long id, Double latitude, Double longitude);
+
 }

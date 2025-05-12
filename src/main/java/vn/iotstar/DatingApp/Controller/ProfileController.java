@@ -2,6 +2,8 @@ package vn.iotstar.DatingApp.Controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -97,7 +99,9 @@ public class ProfileController {
 		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
             throw new RuntimeException("Người dùng chưa được xác thực");
         }
-		Date date = formatter.parse(userInfo.getBirthday());
+//		LocalDate date = formatter.parse(userInfo.getBirthday());
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
+		LocalDate date = LocalDate.parse("2025 05 11", formatter);
 		Optional<Users> user = userService.findById(userInfo.getId());
 		if (user.isPresent()) {
 			Users updateUser = user.get();

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import vn.iotstar.DatingApp.Entity.Account;
+import vn.iotstar.DatingApp.Entity.SearchCriteria;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.AccountUserDetails;
 import vn.iotstar.DatingApp.Model.Request.ResetPasswordRequest;
@@ -95,6 +96,7 @@ public class AuthenticationService {
 		// Đảm bảo bạn dùng đúng Entity Class và Builder/Constructor của bạn
 		Users newUser = Users.builder() // Hoặc new Account(...)
 				.account(account)
+				.searchCriteria(new SearchCriteria())
 				.build();
 		usersRepository.save(newUser); // Lưu user mới
 		logger.info("New user registered successfully with email: {}", email);

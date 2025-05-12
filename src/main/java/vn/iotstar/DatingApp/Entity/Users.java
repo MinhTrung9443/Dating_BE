@@ -1,5 +1,6 @@
 package vn.iotstar.DatingApp.Entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +46,7 @@ public class Users {
     private String sexualOrientation;
 
     @Temporal(TemporalType.DATE)
-    private Date birthday;
+    private LocalDate birthday;
 
     @Lob
     @Column(columnDefinition = "TEXT")

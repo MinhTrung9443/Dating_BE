@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Repository.UsersRepository;
@@ -58,6 +59,29 @@ public class UsersServiceImpl implements UsersService{
             logger.error("Error calculating age for date of birth: {}", dob, e);
             return null; // Trả về null khi có lỗi
         }
+    }
+
+	@Override
+	@Transactional // Đảm bảo là một giao dịch
+	public Users updateUserLocation(Long id, Double latitude, Double longitude) {
+		if (id == null || latitude == null || longitude == null) {
+            logger.warn("Attempted to update location with null parameters. UserId: {}, Lat: {}, Lon: {}", id, latitude, longitude);
+            throw new IllegalArgumentException("User ID, latitude, and longitude cannot be null.");
+        }
+
+        logger.info("Updating location for user ID: {}. New Lat: {}, New Lon: {}", id, latitude, longitude);
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("User not found with ID: {} during location update.", id);
+                    return new RuntimeException("Không tìm thấy người dùng với ID: " + id);
+                });
+
+        user.setLatitude(latitude);
+        user.setLongitude(longitude);
+        userRepository.save(user); // Lưu thay đổi vào DB
+        logger.info("Location successfully updated for user ID: {}", id);
+        
+        return user;
     }
 
 }
