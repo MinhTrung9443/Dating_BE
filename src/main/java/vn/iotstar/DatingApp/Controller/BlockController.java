@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import vn.iotstar.DatingApp.Entity.Account;
 import vn.iotstar.DatingApp.Entity.MatchList;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.MatchListModel;
+import vn.iotstar.DatingApp.Repository.AccountRepository;
 import vn.iotstar.DatingApp.Service.IBlockService;
 import vn.iotstar.DatingApp.Service.IUserService;
 
@@ -28,6 +30,8 @@ public class BlockController {
 	IUserService userService;
 	@Autowired
 	IBlockService blockService;
+	@Autowired
+	AccountRepository accountRepository;
 	/**
 	 * API block người dùng
 	 *
@@ -39,10 +43,14 @@ public class BlockController {
 		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
             throw new RuntimeException("Người dùng chưa được xác thực");
         }
-		Users user1 = userService.findById(blockUser.getUser1()).get();
+		String username = authentication.getName();
+
+		Account acc = accountRepository.findAccountByEmail(username).get();
+		Users user1 = userService.findByAccount(acc).get();
 		Users user2 = userService.findById(blockUser.getUser2()).get();
-		Optional<MatchList> matchList = blockService.findByUser1AndUser2(user1, user2);
-		if (!matchList.isPresent())
+		Optional<MatchList> matchList1 = blockService.findByUser1AndUser2(user1, user2);
+		Optional<MatchList> matchList2 = blockService.findByUser1AndUser2(user2, user1);
+		if (!matchList1.isPresent() && !matchList2.isPresent())
 		{
 			MatchList block = new MatchList();
 			BeanUtils.copyProperties(blockUser, block);
@@ -52,8 +60,14 @@ public class BlockController {
 			blockService.save(block);
 		}
 		// da match roi goi ham update
+		else if (matchList1.isPresent()){
+			MatchList block = matchList1.get();
+			block.setStatus("BLOCK");
+			block.setCreatedAt(new Date());
+			blockService.save(block);
+		}
 		else {
-			MatchList block = matchList.get();
+			MatchList block = matchList2.get();
 			block.setStatus("BLOCK");
 			block.setCreatedAt(new Date());
 			blockService.save(block);
