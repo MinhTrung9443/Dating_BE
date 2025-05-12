@@ -2,9 +2,7 @@ package vn.iotstar.DatingApp.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,24 +52,13 @@ public class SearchCriteriaServiceImpl implements SearchCriteriaService {
 		defaultCriteria.setUsers(user); // Liên kết với user
 
 		// --- Đặt các giá trị mặc định ---
-		defaultCriteria.setMinAge(18); // Ví dụ: tuổi từ 18
+		defaultCriteria.setMinAge(18); 
 		defaultCriteria.setMaxAge(55); // Ví dụ: đến 55
 		defaultCriteria.setDistance(50.0); // Ví dụ: khoảng cách 50km
 		defaultCriteria.setDatingPurpose(null); // Hoặc một giá trị mặc định "new_friends"
 		defaultCriteria.setInterests(null); // Hoặc chuỗi rỗng ""
 		defaultCriteria.setZodiacSign(null);
 		defaultCriteria.setPersonalityType(null);
-
-		// ** Xử lý interestedInGenders (QUAN TRỌNG) **
-		// Bạn cần thêm trường này vào Entity SearchCriteria trước
-		// Ví dụ Entity có: @ElementCollection private Set<String> interestedInGenders;
-//        Set<String> defaultGenders = new HashSet<>();
-		// Logic mặc định: Có thể dựa vào giới tính của user hoặc để trống
-		// Ví dụ đơn giản: tìm cả nam và nữ (cần định nghĩa các giá trị chuẩn "male",
-		// "female")
-//         defaultGenders.add("male");
-//         defaultGenders.add("female");
-//        defaultCriteria.s(defaultGenders); // Bỏ comment khi có trường này
 
 		// Lưu vào DB
 		return searchRepo.save(defaultCriteria);
@@ -91,106 +78,173 @@ public class SearchCriteriaServiceImpl implements SearchCriteriaService {
 	}
 
 	// ========================================================================
-	// == LOGIC LẤY DISCOVERY CARDS (NÊN ĐẶT TRONG DISCOVERY SERVICE RIÊNG) ==
-	// ========================================================================
+		// == LOGIC LẤY DISCOVERY CARDS (NÊN ĐẶT TRONG DISCOVERY SERVICE RIÊNG) ==
+		// ========================================================================
 
-	/**
-	 * Lấy *toàn bộ* danh sách các thẻ hồ sơ người dùng phù hợp với tiêu chí của
-	 * người dùng hiện tại. (Không phân trang)
-	 *
-	 * @param currentUser Người dùng đang thực hiện yêu cầu.
-	 * @return Một List chứa tất cả ProfileCardDto phù hợp.
-	 */
-	@Override
-	@Transactional // Sử dụng org.springframework.transaction.annotation.Transactional
-	public List<ProfileDto> getDiscoveryCards(Users currentUser) { // Đổi tên hàm để khớp với interface nếu cần
-		logger.info("Fetching ALL discovery cards (no paging) for user: {}", currentUser.getAccount().getEmail());
+		/**
+		 * Lấy *toàn bộ* danh sách các thẻ hồ sơ người dùng phù hợp với tiêu chí của
+		 * người dùng hiện tại. (Không phân trang)
+		 *
+		 * @param currentUser Người dùng đang thực hiện yêu cầu.
+		 * @return Một List chứa tất cả ProfileCardDto phù hợp.
+		 */
+		@Override
+		@Transactional // Sử dụng org.springframework.transaction.annotation.Transactional
+		public List<ProfileDto> getDiscoveryCards(Users currentUser) { // Đổi tên hàm để khớp với interface nếu cần
+			logger.info("Fetching ALL discovery cards (no paging) for user: {}", currentUser.getAccount().getEmail());
 
-		// 1. Lấy Search Criteria (hoặc default)
-		SearchCriteria criteria = findByUsers(currentUser).orElseGet(() -> createDefaultCriteria(currentUser)); // Dùng
-																												// lại
-																												// hàm
-																												// đã có
-		logger.debug("Using criteria: {}", criteria);
+			// 1. Lấy Search Criteria (hoặc default)
+			SearchCriteria criteria = findByUsers(currentUser).orElseGet(() -> createDefaultCriteria(currentUser)); // Dùng
+																													// lại
+																													// hàm
+																													// đã có
+			logger.debug("Using criteria: {}", criteria);
 
-		// --- Kiểm tra điều kiện tiên quyết ---
-		if (currentUser.getLatitude() == null || currentUser.getLongitude() == null) {
-			logger.warn("Current user {} location not set. Returning empty list.", currentUser.getAccount().getEmail());
-			return Collections.emptyList();
+			// --- Kiểm tra điều kiện tiên quyết ---
+			if (currentUser.getLatitude() == null || currentUser.getLongitude() == null) {
+				logger.warn("Current user {} location not set. Returning empty list.", currentUser.getAccount().getEmail());
+				return Collections.emptyList();
+			}
+			if (criteria.getDistance() == null || criteria.getDistance() <= 0) {
+				logger.warn("User {} criteria distance invalid ({}). Returning empty list.",
+						currentUser.getAccount().getEmail(), criteria.getDistance());
+				return Collections.emptyList();
+			}
+
+			// 2. Lấy danh sách ID người dùng đã tương tác
+			List<Users> interactedUsers = matchRepo.findUsersILiked(currentUser.getId());
+			interactedUsers.add(currentUser);
+			logger.debug("Excluding user IDs: {}", interactedUsers);
+			// Trích xuất danh sách ID
+			List<Long> interactedUserIds = interactedUsers.stream().map(Users::getId).collect(Collectors.toList());
+
+			// 3. Gọi phương thức Repository để lọc
+		    logger.debug("Executing findDiscoverableUsersNoPaging query...");
+		    List<Users> potentialMatches = usersRepo.filterUsers(
+		        criteria.getMinAge(),
+		        criteria.getMaxAge(),
+		        criteria.getZodiacSign(),
+		        criteria.getPersonalityType(),
+		        criteria.getInterests(),
+		        currentUser.getLatitude(),
+		        currentUser.getLongitude(),
+		        (double) 50
+		    );
+		    
+		    // Thêm bước lọc interacted users
+		    potentialMatches = potentialMatches.stream()
+		            .filter(user -> !interactedUserIds.contains(user.getId()))
+		            .collect(Collectors.toList());
+		    
+		    logger.info("Found {} potential matches after filtering interacted users.", potentialMatches.size());
+
+			// 4. Map List<Users> sang List<ProfileCardDto>
+			List<ProfileDto> profileDtos = potentialMatches.stream()
+					.map(targetUser -> mapUserToProfileCardDto(targetUser, currentUser)) // Gọi hàm helper bên dưới
+					.collect(Collectors.toList());
+
+			logger.info("Mapped {} users to ProfileCardDto.", profileDtos.size());
+			return profileDtos;
 		}
-		if (criteria.getDistance() == null || criteria.getDistance() <= 0) {
-			logger.warn("User {} criteria distance invalid ({}). Returning empty list.",
-					currentUser.getAccount().getEmail(), criteria.getDistance());
-			return Collections.emptyList();
-		}
-		// ** Kiểm tra interestedInGenders nếu có **
-		// Set<String> interestedGenders = criteria.getInterestedInGenders();
-		// if (interestedGenders == null || interestedGenders.isEmpty()) { ... return
-		// Collections.emptyList(); }
 
-		// 2. Lấy danh sách ID người dùng đã tương tác
-		List<Users> interactedUsers = matchRepo.findUsersILiked(currentUser.getId());
-		interactedUsers.add(currentUser);
-		logger.debug("Excluding user IDs: {}", interactedUsers);
-		// Trích xuất danh sách ID
-		List<Long> interactedUserIds = interactedUsers.stream().map(Users::getId).collect(Collectors.toList());
-
-		// 3. Gọi phương thức Repository để lọc
-		logger.debug("Executing findDiscoverableUsersNoPaging query...");
-		List<Users> potentialMatches = usersRepo.filterUsers(criteria.getMinAge(),criteria.getMaxAge(),criteria.getZodiacSign()
-				,criteria.getPersonalityType(),criteria.getInterests(),currentUser.getLatitude(),currentUser.getLongitude(),(double) 50);
-		logger.info("Found {} total potential matches in DB.", potentialMatches.size());
-
-		// 4. Map List<Users> sang List<ProfileCardDto>
-		List<ProfileDto> profileDtos = potentialMatches.stream()
-				.map(targetUser -> mapUserToProfileCardDto(targetUser, currentUser)) // Gọi hàm helper bên dưới
-				.collect(Collectors.toList());
-
-		logger.info("Mapped {} users to ProfileCardDto.", profileDtos.size());
-		return profileDtos;
-	}
-
-	// --- Helper method để map từ Users Entity sang ProfileCardDto ---
-	private ProfileDto mapUserToProfileCardDto(Users targetUser, Users currentUser) {
-		// Tính tuổi (Cần Users có getDob() trả về LocalDate)
-//		Integer age = null;
-//		if (targetUser.getBirthday() != null) {
-//			try { // Thêm try-catch phòng trường hợp dob không hợp lệ
-//				age = usersService.calculateAge(targetUser.getBirthday());
-//			} catch (Exception e) {
-//				logger.error("Error calculating age for user {}: {}", targetUser.getId(), e.getMessage());
+		// --- Helper method để map từ Users Entity sang ProfileCardDto ---
+		private ProfileDto mapUserToProfileCardDto(Users targetUser, Users currentUser) {
+			// Tính tuổi (Cần Users có getDob() trả về LocalDate)
+//			Integer age = null;
+//			if (targetUser.getBirthday() != null) {
+//				try { // Thêm try-catch phòng trường hợp dob không hợp lệ
+//					age = usersService.calculateAge(targetUser.getBirthday());
+//				} catch (Exception e) {
+//					logger.error("Error calculating age for user {}: {}", targetUser.getId(), e.getMessage());
+//				}
 //			}
-//		}
-//
-//		// Lấy ảnh đại diện chính (Cần UserService có hàm này)
-//		String primaryImageUrl = usersService.getPrimaryProfileImageUrl(targetUser);
+	//
+//			// Lấy ảnh đại diện chính (Cần UserService có hàm này)
+//			String primaryImageUrl = usersService.getPrimaryProfileImageUrl(targetUser);
 
-		// Lấy thông tin vị trí hiển thị (Ví dụ: City)
-		String location = targetUser.getAddress();
-		if (location == null || location.trim().isEmpty()) {
-			location = "Không xác định";
+			// Lấy thông tin vị trí hiển thị (Ví dụ: City)
+			String location = targetUser.getAddress();
+			if (location == null || location.trim().isEmpty()) {
+				location = "Không xác định";
+			}
+
+			// Tính khoảng cách
+//			Double distanceKm = null;
+//			if (currentUser.getLatitude() != null && currentUser.getLongitude() != null && targetUser.getLatitude() != null
+//					&& targetUser.getLongitude() != null) {
+//				distanceKm = calculateDistanceHaversine(currentUser.getLatitude(), currentUser.getLongitude(),
+//						targetUser.getLatitude(), targetUser.getLongitude());
+//			}
+
+			// Lấy tên hiển thị
+			String displayName = (targetUser.getName() != null ? targetUser.getName() : "");
+
+			// Tạo DTO bằng Builder
+			return ProfileDto.builder()
+					.id(targetUser.getId())
+					.name(displayName)
+					.imageUrl(targetUser.getImages().get(0).getImage())
+					.location(location)
+					.age(calAge(targetUser.getBirthday()))
+					.build();
 		}
 
-		// Tính khoảng cách
-//		Double distanceKm = null;
-//		if (currentUser.getLatitude() != null && currentUser.getLongitude() != null && targetUser.getLatitude() != null
-//				&& targetUser.getLongitude() != null) {
-//			distanceKm = calculateDistanceHaversine(currentUser.getLatitude(), currentUser.getLongitude(),
-//					targetUser.getLatitude(), targetUser.getLongitude());
-//		}
+	// --- Helper method để map từ Users Entity sang ProfileDto ---
+    private ProfileDto mapUserToProfileDto(Users targetUser, Users currentUser) {
+        Integer age = null;
+        if (targetUser.getBirthday() != null) {
+             try {
+                 age = calAge(targetUser.getBirthday());
+             } catch (Exception e) {
+                  logger.error("Error calculating age for user {}: {}", targetUser.getId(), e.getMessage());
+             }
+        }
 
-		// Lấy tên hiển thị
-		String displayName = (targetUser.getName() != null ? targetUser.getName() : "");
+        String primaryImageUrl = targetUser.getImages().get(0).getImage();
+        String location = targetUser.getAddress(); 
+        if (location == null || location.trim().isEmpty()) {
+            location = "Không xác định";
+        }
 
-		// Tạo DTO bằng Builder
-		return ProfileDto.builder()
-				.id(targetUser.getId())
-				.name(displayName)
-				.imageUrl(targetUser.getImages().get(0).getImage())
-				.location(location)
-				.age(calAge(targetUser.getBirthday()))
-				.build();
-	}
+        Double distanceKm = null;
+         if (currentUser.getLatitude() != null && currentUser.getLongitude() != null &&
+             targetUser.getLatitude() != null && targetUser.getLongitude() != null) {
+             distanceKm = calculateDistanceHaversine(
+                     currentUser.getLatitude(), currentUser.getLongitude(),
+                     targetUser.getLatitude(), targetUser.getLongitude()
+             );
+         }
+
+        String displayName = (targetUser.getName() != null ? targetUser.getName() : "");
+        if (targetUser.getName() != null && !targetUser.getName().isEmpty()) {
+            displayName += " " + targetUser.getName();
+        }
+        displayName = displayName.trim();
+
+
+        return ProfileDto.builder()
+                .id(targetUser.getId())
+                .name(displayName.isEmpty() ? "Người dùng" : displayName)
+                .imageUrl(primaryImageUrl)
+                .age(age)
+                .location(location)
+                .build();
+    }
+
+    // --- Hàm tính khoảng cách Haversine ---
+     private static final int EARTH_RADIUS_KM = 6371;
+     private Double calculateDistanceHaversine(double lat1, double lon1, double lat2, double lon2) {
+         if (Double.isNaN(lat1) || Double.isNaN(lon1) || Double.isNaN(lat2) || Double.isNaN(lon2)) return null;
+         if (Math.abs(lat1 - lat2) < 1e-9 && Math.abs(lon1 - lon2) < 1e-9) return 0.0;
+         double latDistance = Math.toRadians(lat2 - lat1);
+         double lonDistance = Math.toRadians(lon2 - lon1);
+         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+         double distance = EARTH_RADIUS_KM * c;
+         return Math.round(distance * 10.0) / 10.0;
+     }
 	
 	private int calAge(LocalDate bd)
 	{
