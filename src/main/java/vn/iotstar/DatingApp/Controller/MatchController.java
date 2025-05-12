@@ -209,4 +209,19 @@ public class MatchController {
         return userService.findByAccount(currentAcc)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin người dùng cho tài khoản: " + userEmail));
     }
+    
+    @PostMapping("/unMatch/{userId}")
+    public ResponseEntity<?> unMatch(@PathVariable Long userId)
+    {
+    	try {
+    		
+    		matchService.UnMatch(userId);
+    		return ResponseEntity.ok(null);
+    	}
+    	catch (Exception e) {
+			// TODO: handle exception
+    		System.out.println(e.toString());
+		}
+    	return ResponseEntity.badRequest().body(null);
+    }
 }

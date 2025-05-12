@@ -392,5 +392,28 @@ public class MatchServiceImpl implements MatchService {
         long oneWeekInMillis = 7 * 24 * 60 * 60 * 1000L;
         return (System.currentTimeMillis() - matchDate.getTime()) < oneWeekInMillis;
     }
+    
+    @Override
+	public void UnMatch(Long userId)
+    {
+    	Users currentUser = getCurrentUser();
+    	Users otherUser = usersRepository.findById(userId).get();
+    	
+    	Optional< MatchList> match1 = matchListRepository.findByUser1AndUser2(currentUser, otherUser);
+    	Optional< MatchList> match2 = matchListRepository.findByUser1AndUser2(otherUser, currentUser);
+    	
+    	if (match1.isPresent())
+    	{
+    		MatchList thisMatch = match1.get();
+    		thisMatch.setStatus(null);
+    		matchListRepository.save(thisMatch);
+    	}
+    	else if (match2.isPresent())
+    	{
+    		MatchList thisMatch = match2.get();
+    		thisMatch.setStatus(null);
+    		matchListRepository.save(thisMatch);
+    	}
+    }
 }
 
