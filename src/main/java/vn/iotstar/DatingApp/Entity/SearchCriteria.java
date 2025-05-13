@@ -46,6 +46,12 @@ public class SearchCriteria {
 
     @Column(name = "personality_type")
     private String personalityType;
+    
+    public SearchCriteria(Integer min, Integer max, Double distance) {
+    	this.minAge = min;
+    	this.maxAge = max;
+    	this.distance = distance;
+    }
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

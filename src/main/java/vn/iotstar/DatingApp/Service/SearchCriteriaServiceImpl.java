@@ -128,7 +128,7 @@ public class SearchCriteriaServiceImpl implements SearchCriteriaService {
 		        criteria.getInterests(),
 		        currentUser.getLatitude(),
 		        currentUser.getLongitude(),
-		        (double) 50
+		        currentUser.getSearchCriteria().getDistance()
 		    );
 		    
 		    // Thêm bước lọc interacted users

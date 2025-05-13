@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import vn.iotstar.DatingApp.Entity.Account;
+import vn.iotstar.DatingApp.Entity.Image;
 import vn.iotstar.DatingApp.Entity.SearchCriteria;
 import vn.iotstar.DatingApp.Entity.Users;
 import vn.iotstar.DatingApp.Model.AccountUserDetails;
@@ -92,13 +93,21 @@ public class AuthenticationService {
 				.role("USER").status(true)
 				.build();
 		Account savedAccount = accountRepository.save(account);
+		
+		SearchCriteria userSearchDefault = new SearchCriteria(18,50,50.0);
+		Image userImageDefault = new Image();
+		userImageDefault.setImage("https://www.tenforums.com/geek/gars/images/2/types/thumb_15951118880user.png");
+		
 		// 4. Tạo User mới (Hoặc Account)
 		// Đảm bảo bạn dùng đúng Entity Class và Builder/Constructor của bạn
 		Users newUser = Users.builder() // Hoặc new Account(...)
 				.account(account)
-				.searchCriteria(new SearchCriteria())
+				.searchCriteria(userSearchDefault)
 				.build();
+		userSearchDefault.setUsers(newUser);
+		userImageDefault.setUser(newUser);
 		usersRepository.save(newUser); // Lưu user mới
+		
 		logger.info("New user registered successfully with email: {}", email);
 
 

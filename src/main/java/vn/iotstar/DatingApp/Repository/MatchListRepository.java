@@ -35,7 +35,7 @@ public interface MatchListRepository extends JpaRepository<MatchList, Long> {
      * @param userId ID of the current user
      * @return List of users liked by the current user
      */
-    @Query("SELECT m.user2 FROM MatchList m WHERE m.user1.id = :userId AND m.status = 'PENDING'")
+    @Query("SELECT m.user2 FROM MatchList m WHERE m.user1.id = :userId AND m.status = 'LIKE'")
     List<Users> findUsersILiked(@Param("userId") Long userId);
 
     // find matchlist between user1 and user2
