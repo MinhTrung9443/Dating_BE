@@ -61,24 +61,13 @@ public class SearchCardController {
 	
 	private ProfileDto mapUserToProfileCardDto(Users targetUser) {
 
-		// Lấy thông tin vị trí hiển thị (Ví dụ: City)
 		String location = targetUser.getAddress();
 		if (location == null || location.trim().isEmpty()) {
 			location = "Không xác định";
 		}
 
-		// Tính khoảng cách
-//		Double distanceKm = null;
-//		if (currentUser.getLatitude() != null && currentUser.getLongitude() != null && targetUser.getLatitude() != null
-//				&& targetUser.getLongitude() != null) {
-//			distanceKm = calculateDistanceHaversine(currentUser.getLatitude(), currentUser.getLongitude(),
-//					targetUser.getLatitude(), targetUser.getLongitude());
-//		}
-
-		// Lấy tên hiển thị
 		String displayName = (targetUser.getName() != null ? targetUser.getName() : "");
 
-		// Tạo DTO bằng Builder
 		return ProfileDto.builder()
 				.id(targetUser.getId())
 				.name(displayName)
@@ -94,14 +83,12 @@ public class SearchCardController {
 	        return 18; // Hoặc trả về giá trị mặc định, tùy yêu cầu
 	    }
 
-	    // Chuyển Date thành LocalDate
 	    LocalDate birthDate = bd;
 	    LocalDate currentDate = LocalDate.now();
 
 	    // Tính khoảng cách giữa hai ngày
 	    Period period = Period.between(birthDate, currentDate);
 
-	    // Trả về số năm (tuổi)
 	    return period.getYears();
 	}
 

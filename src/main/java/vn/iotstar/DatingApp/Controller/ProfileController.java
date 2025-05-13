@@ -139,10 +139,6 @@ public class ProfileController {
 	@PostMapping("/addImage")
 	public ResponseEntity<?> addImage(@RequestBody ImageModel image)
 	{
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new RuntimeException("Người dùng chưa được xác thực");
-        }
 		Image newImage = new Image();
 		BeanUtils.copyProperties(image, newImage);
 		Optional<Users> user = userService.findById(image.getUserId());
