@@ -94,4 +94,6 @@ public interface MatchService {
 	int countPendingLikes();
 
 	List<MatchFeedDto> getMatchesForFeed(Users currentUser);
+
+	void UnMatch(Long userId);
 }

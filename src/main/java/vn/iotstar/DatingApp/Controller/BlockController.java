@@ -48,6 +48,7 @@ public class BlockController {
 		Account acc = accountRepository.findAccountByEmail(username).get();
 		Users user1 = userService.findByAccount(acc).get();
 		Users user2 = userService.findById(blockUser.getUser2()).get();
+		System.out.println("hello  " + user1.getId() + "   " + user2.getId());
 		Optional<MatchList> matchList1 = blockService.findByUser1AndUser2(user1, user2);
 		Optional<MatchList> matchList2 = blockService.findByUser1AndUser2(user2, user1);
 		if (!matchList1.isPresent() && !matchList2.isPresent())

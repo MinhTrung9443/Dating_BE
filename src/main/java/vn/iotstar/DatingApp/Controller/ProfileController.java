@@ -101,7 +101,7 @@ public class ProfileController {
         }
 //		LocalDate date = formatter.parse(userInfo.getBirthday());
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy MM dd");
-		LocalDate date = LocalDate.parse("2025 05 11", formatter);
+		LocalDate date = LocalDate.parse(userInfo.getBirthday(), formatter);
 		Optional<Users> user = userService.findById(userInfo.getId());
 		if (user.isPresent()) {
 			Users updateUser = user.get();
@@ -139,10 +139,6 @@ public class ProfileController {
 	@PostMapping("/addImage")
 	public ResponseEntity<?> addImage(@RequestBody ImageModel image)
 	{
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new RuntimeException("Người dùng chưa được xác thực");
-        }
 		Image newImage = new Image();
 		BeanUtils.copyProperties(image, newImage);
 		Optional<Users> user = userService.findById(image.getUserId());
