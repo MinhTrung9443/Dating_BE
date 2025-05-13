@@ -3,11 +3,11 @@ package vn.iotstar.DatingApp.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import vn.iotstar.DatingApp.Model.Request.ResetPasswordRequest;
 import vn.iotstar.DatingApp.Model.Response.ApiResponse;
@@ -113,7 +113,7 @@ public class AuthenticationController {
 		Error Responses: 400 (Sai định dạng identifier), 404 (Identifier không tồn tại trong hệ thống), 500 (Lỗi gửi OTP).
 	 */
 	@PostMapping("/password/request-reset-otp")
-    public ResponseEntity<ApiResponse> requestPasswordReset(String email) {
+    public ResponseEntity<ApiResponse> requestPasswordReset(@RequestParam("identifier") String email) {
         authenticationService.requestPasswordResetOtp(email);
         // Luôn trả về OK để tránh lộ thông tin email/SĐT có tồn tại hay không (tùy chính sách bảo mật)
         return ResponseEntity.ok(ApiResponse.builder()
