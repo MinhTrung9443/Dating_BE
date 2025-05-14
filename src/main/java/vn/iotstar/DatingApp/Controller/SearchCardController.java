@@ -52,11 +52,10 @@ public class SearchCardController {
 			List<ProfileDto> listProfile = listUser.stream()
 					.map(user -> mapUserToProfileCardDto(user))
 					.collect(Collectors.toList());
-			ResponseEntity.ok(listProfile);
+			return ResponseEntity.ok(listProfile);
 		} catch (Exception e) {
 			return ResponseEntity.ok(List.of());
 		}
-		return ResponseEntity.ok(List.of());
 	}
 	
 	private ProfileDto mapUserToProfileCardDto(Users targetUser) {
