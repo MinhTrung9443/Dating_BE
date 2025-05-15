@@ -11,6 +11,6 @@ RUN ./mvnw -B clean install -DskipTests
 # Stage 2: Run stage
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar  # Chỉ định tên file cụ thể
-EXPOSE 8080  # Sửa port nếu Spring Boot chạy trên 8080
+COPY --from=builder /app/target/Dating_BE-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080  # Spring Boot mặc định chạy trên port 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
