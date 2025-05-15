@@ -1,0 +1,56 @@
+name: Deploy with self-hosted runner
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      # Checkout mã nguồn
+      - name: Checkout mã nguồn
+        uses: actions/checkout@v3
+
+      # Copy file .env file
+      - name: Copy file .env file
+        run: |
+          echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" >> .env
+
+      # Build và Deploy Docker
+      - name: Build and Deploy Docker
+        run: |
+          # Dừng và xóa container cũ
+          docker-compose down -d
+          
+          # Build image mới
+          docker-compose build --no-cache
+          
+          # Khởi động container
+          docker-compose up -d
+          
+          # Kiểm tra trạng thái container
+          sleep 5  # Đợi 5 giây để container khởi động
+          if [ "$(docker-compose ps -q | wc -l)" -eq "$(docker-compose config --services | wc -l)" ]; then
+            echo "Tất cả container đã khởi động thành công!"
+          else
+            echo "Lỗi: Một hoặc nhiều container không khởi động được!"
+            docker-compose logs
+            exit 1
+          fi
+
+      # Dọn dẹp tài nguyên không cần thiết
+      - name: Clean up unused Docker resources
+        run: |
+          docker system prune -f
+          docker volume prune -f
+
+      # Kiểm tra log ứng dụng
+      - name: Check application logs
+        run: |
+          docker-compose logs --tail=50
