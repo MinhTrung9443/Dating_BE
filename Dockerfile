@@ -2,6 +2,8 @@
 FROM maven:3.8.6-eclipse-temurin-17 AS builder
 WORKDIR /app
 COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
 COPY src ./src
 RUN chmod +x mvnw
 RUN ./mvnw -B clean install -DskipTests
@@ -10,5 +12,5 @@ RUN ./mvnw -B clean install -DskipTests
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar  # Chỉ định tên file cụ thể
-EXPOSE 80
+EXPOSE 8080  # Sửa port nếu Spring Boot chạy trên 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
