@@ -8,6 +8,6 @@ RUN mvn -B clean install -DskipTests
 # Stage 2: Run stage
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=builder /app/target/dating-be.jar app.jar  # Chỉ định tên file cụ thể
+COPY --from=builder /app/target/*.jar app.jar  # Chỉ định tên file cụ thể
 EXPOSE 80
 ENTRYPOINT ["java", "-jar", "app.jar"]
