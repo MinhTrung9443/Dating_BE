@@ -3,7 +3,8 @@ FROM maven:3.8.6-eclipse-temurin-17 AS builder
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN mvn -B clean install -DskipTests
+RUN chmod +x mvnw
+RUN ./mvnw -B clean install -DskipTests
 
 # Stage 2: Run stage
 FROM eclipse-temurin:17-jre
