@@ -25,32 +25,5 @@ jobs:
       # Build và Deploy Docker
       - name: Build and Deploy Docker
         run: |
-          # Dừng và xóa container cũ
-          docker-compose down -d
-          
-          # Build image mới
-          docker-compose build --no-cache
-          
-          # Khởi động container
-          docker-compose up -d
-          
-          # Kiểm tra trạng thái container
-          sleep 5  # Đợi 5 giây để container khởi động
-          if [ "$(docker-compose ps -q | wc -l)" -eq "$(docker-compose config --services | wc -l)" ]; then
-            echo "Tất cả container đã khởi động thành công!"
-          else
-            echo "Lỗi: Một hoặc nhiều container không khởi động được!"
-            docker-compose logs
-            exit 1
-          fi
-
-      # Dọn dẹp tài nguyên không cần thiết
-      - name: Clean up unused Docker resources
-        run: |
-          docker system prune -f
-          docker volume prune -f
-
-      # Kiểm tra log ứng dụng
-      - name: Check application logs
-        run: |
-          docker-compose logs --tail=50
+          sudo docker-compose down -d --build
+          sudo docker-compose up -d --build
